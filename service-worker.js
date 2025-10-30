@@ -1,8 +1,8 @@
-// 🔹 SOS App – Offline Service Worker
-const CACHE_NAME = "sos-cache-v1";
+const CACHE_NAME = "sos-cache-v4";
 const FILES_TO_CACHE = [
   "index.html",
   "message.html",
+  "offline.html",
   "manifest.json",
   "includes/header.html",
   "includes/footer.html",
@@ -13,7 +13,7 @@ const FILES_TO_CACHE = [
   "styles/footer.css"
 ];
 
-// 🔹 Install – cache all essential files
+// Installera & cachea alla filer
 self.addEventListener("install", event => {
   console.log("📦 Installing SOS service worker...");
   event.waitUntil(
@@ -23,13 +23,16 @@ self.addEventListener("install", event => {
   );
 });
 
-// 🔹 Activate – clean old caches
+// Aktivera & ta bort gamla cache-versioner
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
         keys.map(key => {
-          if (key !== CACHE_NAME) return caches.delete(key);
+          if (key !== CACHE_NAME) {
+            console.log("🧹 Deleting old cache:", key);
+            return caches.delete(key);
+          }
         })
       );
     })
@@ -38,15 +41,14 @@ self.addEventListener("activate", event => {
   console.log("✅ SOS service worker active");
 });
 
-// 🔹 Fetch – serve from cache, fallback to network
+// Hämta från cache först, annars nätet → fallback till offline.html
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
         return response || fetch(event.request).catch(() => {
-          // Optional: fallback offline page
           if (event.request.mode === "navigate") {
-            return caches.match("message.html");
+            return caches.match("offline.html");
           }
         });
       })
