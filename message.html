@@ -3,75 +3,159 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SOS ✝️ – Shelter Messages</title>
+<title>SOS ✝️ – Shelter Communication Center</title>
+<meta name="description" content="Offline-first message board for shelters. Save, export, share via QR, and import reports without internet." />
 <style>
-  body { font-family: system-ui, sans-serif; background:#0b1528; color:#f5f7ff; margin:0; padding:20px; text-align:center; }
-  h1 { color:#ffe57f; text-shadow:0 0 10px rgba(255,255,150,.5); }
-  #statusBar { position:sticky; top:0; background:rgba(0,0,0,.5); padding:8px; font-weight:bold; border-radius:8px; width:fit-content; margin:0 auto 15px; }
-  input,textarea{ width:90%; max-width:600px; border-radius:8px; border:none; padding:10px; margin:5px 0; font-size:1rem; background:rgba(255,255,255,.1); color:#fff; outline:none; }
-  textarea{ height:80px; resize:none; }
-  #messages{ background:rgba(255,255,255,.08); border-radius:12px; padding:15px; max-width:600px; margin:20px auto; text-align:left; min-height:200px; box-shadow:0 0 10px rgba(0,0,0,.4); }
-  .message{ background:rgba(0,0,0,.3); margin:8px 0; padding:10px; border-radius:8px; }
-  .message small{ display:block; font-size:.8em; color:#bbb; margin-top:4px; }
-  .pending{ border-left:4px solid orange; }
-  .sent{ border-left:4px solid #6cff6c; }
-  .received{ border-left:4px solid #7fd0ff; }
-  button{ margin-top:10px; padding:10px 30px; font-weight:bold; background:linear-gradient(90deg,#ffd85c,#ffb347); border:none; border-radius:30px; color:#001533; cursor:pointer; box-shadow:0 0 10px rgba(255,255,255,.3); transition:all .2s ease; }
-  button:hover{ transform:scale(1.05); box-shadow:0 0 20px rgba(255,255,255,.5); }
-  #qrBox{ margin-top:25px; }
-  footer{ margin-top:40px; font-size:.9rem; color:#ccc; }
+  :root{
+    --bg:#0b1528;
+    --panel:rgba(255,255,255,.08);
+    --ink:#f5f7ff;
+    --muted:#cfe0ff;
+    --accent:#ffd85c;
+    --warn:#ffb347;
+    --ok:#6cff6c;
+    --recv:#7fd0ff;
+    --danger:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:20px;text-align:center}
+  h1{color:#ffe57f;text-shadow:0 0 10px rgba(255,255,150,.5);margin:0 0 12px}
+  #statusBar{
+    position:sticky;top:0;background:rgba(0,0,0,.5);padding:8px 12px;font-weight:700;
+    border-radius:10px;width:fit-content;margin:0 auto 14px;transition:all .2s;
+  }
+  .wrap{max-width:1000px;margin:0 auto}
+  .grid{display:grid;gap:16px}
+  @media(min-width:800px){ .grid.cols-2{grid-template-columns:1fr 1fr} }
 
-  /* Scanner UI */
-  .scanControls { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-  #scanArea { display:none; margin:16px auto; max-width:620px; }
-  #video { width:100%; max-width:600px; border-radius:12px; box-shadow:0 0 10px rgba(0,0,0,.5); background:#000; }
-  #scanNote { font-size:.9rem; color:#cfe8ff; margin-top:6px; }
-  #importPreview { white-space:pre-wrap; text-align:left; background:rgba(255,255,255,.06); padding:12px; border-radius:8px; max-width:600px; margin:12px auto 0; }
-  #fallbackBox { display:none; max-width:600px; margin:12px auto 0; }
-  #fallbackText { height:120px; }
+  .card{background:var(--panel);border-radius:14px;padding:16px;text-align:left;box-shadow:0 0 12px rgba(0,0,0,.35)}
+  .card h3{margin:0 0 8px;color:#ffe57f}
+  .muted{color:var(--muted);font-size:.95rem}
+
+  input, textarea{
+    width:100%;border:none;border-radius:10px;background:rgba(255,255,255,.1);color:#fff;
+    padding:10px;font-size:1rem;outline:none;
+  }
+  textarea{min-height:84px;resize:none}
+
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row > *{flex:1}
+
+  .btn{
+    display:inline-block;margin-top:10px;padding:10px 18px;font-weight:700;
+    background:linear-gradient(90deg,var(--accent),var(--warn));
+    border:none;border-radius:30px;color:#001533;cursor:pointer;
+    box-shadow:0 0 10px rgba(255,255,255,.25);transition:transform .15s, box-shadow .15s;
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:0 0 18px rgba(255,255,255,.4)}
+  .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .btn.danger{background:linear-gradient(90deg,#ff8a8a,#ff5e5e);color:#1b0000}
+  .btn.ok{background:linear-gradient(90deg,#9bffa1,#5bff6d);color:#00220a}
+  .btn.info{background:linear-gradient(90deg,#a3d8ff,#6fbaff);color:#001a33}
+
+  #messages{max-height:420px;overflow:auto;border-radius:12px;background:var(--panel);padding:10px}
+  .message{background:rgba(0,0,0,.35);padding:10px;border-radius:10px;margin:8px 0}
+  .message small{display:block;font-size:.8rem;color:#bbb;margin-top:4px}
+  .badge{display:inline-block;font-size:.75rem;padding:2px 8px;border-radius:999px;margin-left:6px}
+  .pending{border-left:4px solid var(--warn)}
+  .sent{border-left:4px solid var(--ok)}
+  .received{border-left:4px solid var(--recv)}
+  .b-pending{background:var(--warn);color:#1f1200}
+  .b-sent{background:var(--ok);color:#001d05}
+  .b-recv{background:var(--recv);color:#001629}
+
+  #qrBox{margin-top:16px;text-align:center}
+  #scanArea{display:none;margin-top:12px}
+  #video{width:100%;max-width:560px;border-radius:12px;background:#000;box-shadow:0 0 10px rgba(0,0,0,.5)}
+  #importPreview{white-space:pre-wrap;text-align:left;background:rgba(255,255,255,.06);padding:12px;border-radius:10px;max-width:600px;margin:10px auto 0}
+  #fallbackBox{display:none;max-width:600px;margin:12px auto 0}
+  #fallbackText{min-height:120px}
+
+  footer{margin-top:28px;color:#cfd8e3}
+  footer .verse{font-style:italic;color:#dfe7ff}
 </style>
 </head>
 <body>
-<h1>🕊️ SOS Shelter Messages</h1>
-<div id="statusBar">🔴 Offline</div>
+<div class="wrap">
+  <h1>🕊️ SOS Shelter Communication</h1>
+  <div id="statusBar">🔴 Offline</div>
 
-<input id="shelterName" placeholder="Shelter name (e.g. Kalix Church)" />
-<input id="shelterStatus" placeholder="Status (e.g. 8 people, 2 injured, low water)" />
+  <!-- Shelter identity -->
+  <div class="grid cols-2">
+    <div class="card">
+      <h3>🏷️ Shelter Info</h3>
+      <div class="row">
+        <input id="shelterName" placeholder="Shelter name (e.g. Kalix Church Shelter)" />
+      </div>
+      <div class="row">
+        <input id="peopleCount" placeholder="People count (e.g. 8)" inputmode="numeric" />
+        <input id="injuredCount" placeholder="Injured (e.g. 2)" inputmode="numeric" />
+      </div>
+      <input id="shelterStatus" placeholder="Status summary (e.g. low water, need insulin)" />
+      <div class="row">
+        <input id="shelterLocation" placeholder="Location (optional, e.g. 65.85N, 23.16E)" />
+        <button class="btn ghost" id="btnGPS">📍 Get GPS</button>
+      </div>
+      <div class="muted" id="lastUpdated">Last updated: —</div>
+    </div>
 
-<p>Offline message board for your shelter.<br/>Messages are saved locally and can be exported or shared via QR.</p>
-
-<div id="messages"></div>
-
-<textarea id="messageInput" placeholder="Write your message here..."></textarea><br />
-<div class="scanControls">
-  <button id="sendBtn">Send Message</button>
-  <button id="showQR">Show QR</button>
-  <button id="scanQR">Scan QR</button>
-  <button id="exportBtn">Export Log</button>
-  <button id="clearBtn">Clear All</button>
-</div>
-
-<!-- Scanner / Import area -->
-<div id="scanArea">
-  <video id="video" playsinline></video>
-  <div id="scanNote">Point the camera at the QR code. The text will appear below for confirmation.</div>
-  <div id="importPreview"></div>
-  <div class="scanControls">
-    <button id="confirmImport" disabled>Import to Log</button>
-    <button id="stopScan">Stop</button>
-    <button id="toggleFallback">Manual Paste</button>
-  </div>
-  <div id="fallbackBox">
-    <textarea id="fallbackText" placeholder="Paste QR text here (manual fallback)"></textarea>
-    <div class="scanControls">
-      <button id="importFallback">Import Pasted</button>
+    <!-- Actions -->
+    <div class="card">
+      <h3>⚡ Quick Actions</h3>
+      <div class="row">
+        <button class="btn ok" id="sendBtn">✍️ Send Message</button>
+        <button class="btn" id="showQR">📱 Show QR</button>
+      </div>
+      <div class="row">
+        <button class="btn info" id="scanQR">📷 Scan QR</button>
+        <button class="btn" id="exportBtn">📤 Export .txt</button>
+      </div>
+      <div class="row">
+        <button class="btn ghost" id="toggleFilter">Filter: All</button>
+        <button class="btn danger" id="clearBtn">🧹 Clear All</button>
+      </div>
+      <div class="muted">Pending messages will be marked as Sent automatically when online.</div>
     </div>
   </div>
+
+  <!-- Messages -->
+  <div class="card" style="margin-top:16px;">
+    <h3>🗒️ Message Board</h3>
+    <textarea id="messageInput" placeholder="Write your message… (e.g. 'Need medical assistance for diabetic, insulin low')"></textarea>
+    <div id="messages" aria-live="polite"></div>
+  </div>
+
+  <!-- QR Export -->
+  <div class="card" id="qrSection" style="margin-top:16px;">
+    <h3>🔗 Share via QR</h3>
+    <div class="muted">Shows a compact report (shelter, status, last 3 messages). Let a messenger or SOS staff scan it.</div>
+    <div id="qrBox"></div>
+  </div>
+
+  <!-- Scanner / Import -->
+  <div class="card" id="scanArea">
+    <h3>📥 Import from QR</h3>
+    <video id="video" playsinline muted></video>
+    <div id="scanNote" class="muted">Point the camera at the QR code.</div>
+    <div id="importPreview"></div>
+    <div class="row" style="justify-content:center;margin-top:6px;">
+      <button class="btn ok" id="confirmImport" disabled>Import to Log</button>
+      <button class="btn ghost" id="stopScan">Stop</button>
+      <button class="btn ghost" id="toggleFallback">Manual Paste</button>
+    </div>
+    <div id="fallbackBox">
+      <textarea id="fallbackText" placeholder="Paste QR text here (manual fallback)"></textarea>
+      <div class="row" style="justify-content:center">
+        <button class="btn ok" id="importFallback">Import Pasted</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="verse">“Even though I walk through the valley of the shadow of death, I will fear no evil, for You are with me.” — Psalm 23:4</div>
+    <div>Built in Christ ✝️ | SOS Communication Board</div>
+  </footer>
 </div>
-
-<div id="qrBox"></div>
-
-<footer>Built in Christ ✝️ | SOS Communication Board</footer>
 
 <!-- ultra-simple QR draw (export) -->
 <script>
@@ -94,223 +178,309 @@ function createQRCanvas(text){
 </script>
 
 <script>
-const msgBox=document.getElementById('messages'),
-      input=document.getElementById('messageInput'),
-      sendBtn=document.getElementById('sendBtn'),
-      clearBtn=document.getElementById('clearBtn'),
-      exportBtn=document.getElementById('exportBtn'),
-      showQR=document.getElementById('showQR'),
-      scanQR=document.getElementById('scanQR'),
-      scanArea=document.getElementById('scanArea'),
-      video=document.getElementById('video'),
-      statusBar=document.getElementById('statusBar'),
-      shelterName=document.getElementById('shelterName'),
-      shelterStatus=document.getElementById('shelterStatus'),
-      qrBox=document.getElementById('qrBox'),
-      importPreview=document.getElementById('importPreview'),
-      confirmImport=document.getElementById('confirmImport'),
-      stopScan=document.getElementById('stopScan'),
-      toggleFallback=document.getElementById('toggleFallback'),
-      fallbackBox=document.getElementById('fallbackBox'),
-      fallbackText=document.getElementById('fallbackText'),
-      importFallback=document.getElementById('importFallback');
+const el = (id)=>document.getElementById(id);
+
+// Elements
+const statusBar = el('statusBar');
+const shelterName = el('shelterName');
+const peopleCount = el('peopleCount');
+const injuredCount = el('injuredCount');
+const shelterStatus = el('shelterStatus');
+const shelterLocation = el('shelterLocation');
+const btnGPS = el('btnGPS');
+const lastUpdated = el('lastUpdated');
+
+const messageInput = el('messageInput');
+const messagesBox = el('messages');
+const sendBtn = el('sendBtn');
+const clearBtn = el('clearBtn');
+const exportBtn = el('exportBtn');
+const showQR = el('showQR');
+
+const qrBox = el('qrBox');
+const qrSection = el('qrSection');
+
+const scanQR = el('scanQR');
+const scanArea = el('scanArea');
+const video = el('video');
+const scanNote = el('scanNote');
+const importPreview = el('importPreview');
+const confirmImport = el('confirmImport');
+const stopScan = el('stopScan');
+const toggleFallback = el('toggleFallback');
+const fallbackBox = el('fallbackBox');
+const fallbackText = el('fallbackText');
+const importFallback = el('importFallback');
+
+const toggleFilter = el('toggleFilter');
+let filterMode = 'all'; // 'all' | 'received'
+
+// Persist identity fields
+function persistInfo(){
+  localStorage.setItem('shelterName', (shelterName.value||'').trim());
+  localStorage.setItem('shelterStatus', (shelterStatus.value||'').trim());
+  localStorage.setItem('peopleCount', (peopleCount.value||'').trim());
+  localStorage.setItem('injuredCount', (injuredCount.value||'').trim());
+  localStorage.setItem('shelterLocation', (shelterLocation.value||'').trim());
+  lastUpdated.textContent = 'Last updated: ' + new Date().toLocaleString();
+}
+[shelterName, shelterStatus, peopleCount, injuredCount, shelterLocation].forEach(i=>i.addEventListener('input', persistInfo));
+
+// Load identity on start
+(function loadIdentity(){
+  shelterName.value = localStorage.getItem('shelterName') || '';
+  shelterStatus.value = localStorage.getItem('shelterStatus') || '';
+  peopleCount.value = localStorage.getItem('peopleCount') || '';
+  injuredCount.value = localStorage.getItem('injuredCount') || '';
+  shelterLocation.value = localStorage.getItem('shelterLocation') || '';
+  lastUpdated.textContent = 'Last updated: ' + (localStorage.getItem('lastUpdated') || '—');
+})();
+const origPersist = persistInfo;
+persistInfo = function(){ origPersist(); localStorage.setItem('lastUpdated', new Date().toLocaleString()); };
+
+// Messages store
+function getStore(){ return JSON.parse(localStorage.getItem('sosMessages')||'[]'); }
+function setStore(arr){ localStorage.setItem('sosMessages', JSON.stringify(arr)); }
+
+function renderMessages(){
+  const all = getStore();
+  messagesBox.innerHTML = '';
+  const list = filterMode==='received' ? all.filter(m=>m.status==='received') : all;
+  list.forEach(m=>appendMsg(m));
+  messagesBox.scrollTop = messagesBox.scrollHeight;
+}
+
+function appendMsg(m){
+  const div = document.createElement('div');
+  const cls = m.status==='sent' ? 'sent' : (m.status==='received' ? 'received' : 'pending');
+  div.className = `message ${cls}`;
+  let badgeClass = m.status==='sent' ? 'b-sent' : (m.status==='received' ? 'b-recv' : 'b-pending');
+  const textEsc = m.text; // kept simple; content is user text
+  div.innerHTML = `<div>${textEsc}<span class="badge ${badgeClass}">${labelFor(m.status)}</span></div>
+                   <small>${m.time}</small>`;
+  messagesBox.appendChild(div);
+}
+function labelFor(st){ return st==='sent'?'✅ Sent':(st==='received'?'📥 Received':'⏳ Pending'); }
+
+function addMessage(text, status='pending', timeOverride=null){
+  const list = getStore();
+  const msg = { text, status, time: timeOverride || new Date().toLocaleString() };
+  list.push(msg); setStore(list); appendMsg(msg);
+  try{ if(navigator.vibrate) navigator.vibrate(20); }catch(_){}
+}
+
+// Auto-send (mark pending→sent on online)
+async function trySend(){
+  const list = getStore();
+  let changed=false;
+  if(navigator.onLine){
+    for(const m of list){ if(m.status==='pending'){ m.status='sent'; changed=true; } }
+    if(changed){ setStore(list); renderMessages(); }
+  }
+}
+
+// Online indicator
+function updateStatus(){
+  if(navigator.onLine){
+    statusBar.textContent='🟢 Online';
+    statusBar.style.color='#9fff9f';
+    statusBar.style.boxShadow='0 0 12px rgba(100,255,100,.35)';
+    trySend();
+  }else{
+    statusBar.textContent='🔴 Offline';
+    statusBar.style.color='#ff9f9f';
+    statusBar.style.boxShadow='0 0 0 rgba(0,0,0,0)';
+  }
+}
+window.addEventListener('online', updateStatus);
+window.addEventListener('offline', updateStatus);
+
+// Send
+sendBtn.addEventListener('click', ()=>{
+  const t = (messageInput.value||'').trim();
+  if(!t) return;
+  addMessage(t, navigator.onLine?'sent':'pending');
+  messageInput.value='';
+  if(navigator.onLine) trySend();
+});
+
+// Clear
+clearBtn.addEventListener('click', ()=>{
+  if(confirm('Clear all local messages and QR view?')){
+    localStorage.removeItem('sosMessages');
+    qrBox.innerHTML = '';
+    renderMessages();
+  }
+});
+
+// Filter
+toggleFilter.addEventListener('click', ()=>{
+  filterMode = (filterMode==='all') ? 'received' : 'all';
+  toggleFilter.textContent = 'Filter: ' + (filterMode==='all'?'All':'Received');
+  renderMessages();
+});
+
+// Export .txt
+exportBtn.addEventListener('click', ()=>{
+  const name = shelterName.value || 'Unknown Shelter';
+  const status = buildStatusLine();
+  const loc = shelterLocation.value || 'Unknown';
+  const msgs = getStore();
+  let content = `SOS SHELTER LOG\nGenerated: ${new Date().toLocaleString()}\n\n`+
+                `Shelter: ${name}\nStatus: ${status}\nLocation: ${loc}\n\n`;
+  if(msgs.length===0) content += 'No messages recorded.\n';
+  msgs.forEach((m,i)=>{ content += `#${i+1}\nTime: ${m.time}\nStatus: ${m.status}\nMessage: ${m.text}\n\n`; });
+  const blob = new Blob([content], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const date = new Date().toISOString().split('T')[0];
+  a.download = `sos_shelter_log_${date}.txt`;
+  a.click();
+});
+
+// Build status line
+function buildStatusLine(){
+  const p = peopleCount.value ? `${peopleCount.value} people` : '';
+  const inj = injuredCount.value ? `${injuredCount.value} injured` : '';
+  const sum = shelterStatus.value || '';
+  return [p, inj, sum].filter(Boolean).join(', ');
+}
+
+// QR export (compact)
+showQR.addEventListener('click', ()=>{
+  qrBox.innerHTML='';
+  const name = shelterName.value || 'Unknown Shelter';
+  const stat = buildStatusLine() || 'No status';
+  const loc  = shelterLocation.value || '';
+  const msgs = getStore();
+  const last = msgs.slice(-3);
+
+  let text = `SOS SHELTER REPORT\n${new Date().toLocaleString()}\n`+
+             `Shelter:${name}\nStatus:${stat}\n`+
+             (loc ? `Location:${loc}\n` : '') + `\n`;
+  last.forEach((m,i)=> text += `#${i+1} ${m.time}: ${m.text}\n`);
+
+  const canvas = createQRCanvas(text);
+  qrBox.appendChild(canvas);
+  const note = document.createElement('p'); note.className='muted';
+  note.textContent='Show this QR to a messenger or SOS staff to import.';
+  qrBox.appendChild(note);
+
+  try{ if(navigator.vibrate) navigator.vibrate([10,40,10]); }catch(_){}
+});
+
+// ===== GPS (optional) =====
+btnGPS.addEventListener('click', ()=>{
+  if(!navigator.geolocation){
+    alert('Geolocation not supported on this device.');
+    return;
+  }
+  btnGPS.disabled = true; btnGPS.textContent = '📍 Getting…';
+  navigator.geolocation.getCurrentPosition(
+    (pos)=>{
+      const {latitude, longitude} = pos.coords;
+      shelterLocation.value = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+      persistInfo();
+      btnGPS.textContent = '📍 Set';
+      setTimeout(()=>{ btnGPS.disabled=false; btnGPS.textContent='📍 Get GPS'; }, 1200);
+    },
+    ()=>{
+      alert('Unable to get location.');
+      btnGPS.disabled=false; btnGPS.textContent='📍 Get GPS';
+    },
+    { enableHighAccuracy:true, timeout:8000, maximumAge:30000 }
+  );
+});
+
+// ===== QR IMPORT =====
+const hasBarcodeDetector = ('BarcodeDetector' in window);
+let detector = null;
+if(hasBarcodeDetector){ try{ detector = new BarcodeDetector({formats:['qr_code']}); }catch(_){ detector=null; } }
 
 let scanStream=null, scanning=false, lastDetectedText='';
 
-// Persist shelter meta
-shelterName.value=localStorage.getItem('shelterName')||'';
-shelterStatus.value=localStorage.getItem('shelterStatus')||'';
-function saveInfo(){
-  localStorage.setItem('shelterName', (shelterName.value||'').trim());
-  localStorage.setItem('shelterStatus', (shelterStatus.value||'').trim());
-}
-shelterName.addEventListener('input',saveInfo);
-shelterStatus.addEventListener('input',saveInfo);
-
-// Messages
-function loadMessages(){
-  const stored=JSON.parse(localStorage.getItem('sosMessages')||'[]');
-  msgBox.innerHTML='';
-  stored.forEach(m=>addMsg(m.text,m.time,m.status));
-}
-function addMsg(text,time,status){
-  const div=document.createElement('div');
-  const cls = status==='sent'?'sent' : status==='received'?'received':'pending';
-  div.className='message '+cls;
-  const s = status==='sent'?'✅ Sent' : status==='received'?'📥 Received' : '⏳ Pending';
-  div.innerHTML=`<span>${text}</span><small>${time} — ${s}</small>`;
-  msgBox.appendChild(div);
-}
-function saveMsg(text,status='pending',timeOverride=null){
-  const arr=JSON.parse(localStorage.getItem('sosMessages')||'[]');
-  const time=timeOverride || new Date().toLocaleString();
-  const msg={text, time, status};
-  arr.push(msg);
-  localStorage.setItem('sosMessages', JSON.stringify(arr));
-  addMsg(text, time, status);
-}
-
-// Simulated send (will mark pending→sent when online)
-async function trySend(){
-  const arr=JSON.parse(localStorage.getItem('sosMessages')||'[]');
-  let changed=false;
-  for(let m of arr){
-    if(m.status==='pending' && navigator.onLine){
-      m.status='sent'; changed=true;
-    }
-  }
-  if(changed){ localStorage.setItem('sosMessages', JSON.stringify(arr)); loadMessages(); }
-}
-
-// UI actions
-sendBtn.onclick=()=>{
-  const t=input.value.trim();
-  if(!t) return;
-  saveMsg(t, navigator.onLine?'sent':'pending');
-  input.value='';
-  if(navigator.onLine) trySend();
-};
-
-clearBtn.onclick=()=>{
-  if(confirm('Clear all local messages?')){
-    localStorage.removeItem('sosMessages');
-    msgBox.innerHTML=''; qrBox.innerHTML='';
-  }
-};
-
-exportBtn.onclick=()=>{
-  const name=shelterName.value || 'Unknown Shelter';
-  const status=shelterStatus.value || 'No status provided';
-  const msgs=JSON.parse(localStorage.getItem('sosMessages')||'[]');
-  let content = `SOS SHELTER LOG\nGenerated: ${new Date().toLocaleString()}\n\nShelter: ${name}\nStatus: ${status}\n\n`;
-  if(msgs.length===0) content += 'No messages recorded.\n';
-  msgs.forEach((m,i)=>{ content += `#${i+1}\nTime: ${m.time}\nStatus: ${m.status}\nMessage: ${m.text}\n\n`; });
-  const blob=new Blob([content],{type:'text/plain'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  const date=new Date().toISOString().split('T')[0];
-  a.download=`sos_shelter_log_${date}.txt`;
-  a.click();
-};
-
-// QR export
-showQR.onclick=()=>{
-  qrBox.innerHTML='';
-  const name=shelterName.value||'Unknown Shelter';
-  const stat=shelterStatus.value||'No status';
-  const msgs=JSON.parse(localStorage.getItem('sosMessages')||'[]');
-  const last=msgs.slice(-3);
-  let text=`SOS SHELTER REPORT\n${new Date().toLocaleString()}\nShelter:${name}\nStatus:${stat}\n\n`;
-  last.forEach((m,i)=> text += `#${i+1} ${m.time}: ${m.text}\n`);
-  const canvas=createQRCanvas(text);
-  qrBox.appendChild(canvas);
-  const note=document.createElement('p'); note.textContent='Show this QR to a messenger or SOS team to import.';
-  qrBox.appendChild(note);
-};
-
-// Online status
-function updateStatus(){
-  if(navigator.onLine){
-    statusBar.textContent='🟢 Online'; statusBar.style.color='#9fff9f'; trySend();
-  }else{
-    statusBar.textContent='🔴 Offline'; statusBar.style.color='#ff9f9f';
-  }
-}
-window.addEventListener('online',updateStatus);
-window.addEventListener('offline',updateStatus);
-updateStatus(); loadMessages();
-
-// ===== QR IMPORT (BarcodeDetector) =====
-const hasBarcodeDetector = ('BarcodeDetector' in window);
-let detector = null;
-if(hasBarcodeDetector){
-  try {
-    detector = new BarcodeDetector({ formats: ['qr_code'] });
-  } catch(_) { detector = null; }
-}
-
-scanQR.onclick = async ()=>{
-  qrBox.innerHTML='';
+scanQR.addEventListener('click', async ()=>{
   importPreview.textContent=''; confirmImport.disabled = true; lastDetectedText='';
   fallbackBox.style.display='none';
   scanArea.style.display='block';
-
   if(!hasBarcodeDetector || !detector){
-    // No detector: show fallback UI (manual paste)
-    document.getElementById('scanNote').textContent = 'Camera QR scanning not supported on this device. Use Manual Paste.';
+    scanNote.textContent = 'Camera QR scanning not supported on this device. Use Manual Paste.';
     return;
   }
-
-  try {
-    scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+  try{
+    scanStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' } });
     video.srcObject = scanStream; await video.play();
     scanning = true; scanLoop();
-  } catch(err){
-    document.getElementById('scanNote').textContent = 'Camera access denied/unavailable. Use Manual Paste.';
+  }catch(err){
+    scanNote.textContent = 'Camera access denied/unavailable. Use Manual Paste.';
   }
-};
+});
 
 async function scanLoop(){
   if(!scanning || !detector) return;
-  try {
-    const barcodes = await detector.detect(video);
-    if(barcodes && barcodes.length){
-      const txt = (barcodes[0].rawValue||'').trim();
-      if(txt && txt !== lastDetectedText){
+  try{
+    const codes = await detector.detect(video);
+    if(codes && codes.length){
+      const txt = (codes[0].rawValue||'').trim();
+      if(txt && txt!==lastDetectedText){
         lastDetectedText = txt;
         importPreview.textContent = txt;
         confirmImport.disabled = false;
+        try{ if(navigator.vibrate) navigator.vibrate(15); }catch(_){}
       }
     }
-  } catch(_) { /* ignore */ }
-  if(scanning){ requestAnimationFrame(scanLoop); }
+  }catch(_){}
+  if(scanning) requestAnimationFrame(scanLoop);
 }
 
-stopScan.onclick = ()=>{
-  stopScanner();
-  scanArea.style.display='none';
-};
+stopScan.addEventListener('click', ()=>{
+  stopScanner(); scanArea.style.display='none';
+});
 
 function stopScanner(){
-  scanning = false;
+  scanning=false;
   if(video.srcObject){
-    video.pause();
-    video.srcObject.getTracks().forEach(t=>t.stop());
-    video.srcObject = null;
+    try{ video.pause(); video.srcObject.getTracks().forEach(t=>t.stop()); }catch(_){}
+    video.srcObject=null;
   }
 }
 
-toggleFallback.onclick = ()=>{
+toggleFallback.addEventListener('click', ()=>{
   fallbackBox.style.display = (fallbackBox.style.display==='none'?'block':'none');
-};
+});
 
-importFallback.onclick = ()=>{
+importFallback.addEventListener('click', ()=>{
   const txt = (fallbackText.value||'').trim();
   if(!txt) return;
   importPreview.textContent = txt;
   confirmImport.disabled = false;
-};
+});
 
-confirmImport.onclick = ()=>{
-  const txt = importPreview.textContent.trim();
+confirmImport.addEventListener('click', ()=>{
+  const txt = (importPreview.textContent||'').trim();
   if(!txt) return;
 
-  // Parse minimal fields from our export format (best-effort)
-  const shelterLine = (txt.match(/Shelter:(.*)/i)||[])[1]?.trim() || 'Unknown Shelter';
-  const statusLine  = (txt.match(/Status:(.*)/i)||[])[1]?.trim() || 'Unknown Status';
+  // Best-effort parse
+  const name = (txt.match(/Shelter:(.*)/i)||[])[1]?.trim() || 'Unknown Shelter';
+  const stat = (txt.match(/Status:(.*)/i)||[])[1]?.trim() || 'Unknown Status';
+  const loc  = (txt.match(/Location:(.*)/i)||[])[1]?.trim();
 
-  // Store a single summarized "received" entry
-  const summary = `Imported from "${shelterLine}" — status: ${statusLine}\n\n` + txt;
-  saveMsg(summary, 'received');
+  const header = `Imported from "${name}" — status: ${stat}` + (loc?` — loc: ${loc}`:'');
+  addMessage(`${header}\n\n${txt}`, 'received');
 
-  // UI cleanup
   alert('Imported into local log.');
   confirmImport.disabled = true;
   importPreview.textContent = '';
   fallbackText.value = '';
-  stopScanner();
-  scanArea.style.display='none';
-};
+  stopScanner(); scanArea.style.display='none';
+});
+
+// Init
+function init(){
+  updateStatus();
+  renderMessages();
+}
+init();
 </script>
 </body>
 </html>
