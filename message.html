@@ -56,6 +56,13 @@
     margin-top: 4px;
   }
 
+  .pending {
+    border-left: 4px solid orange;
+  }
+  .sent {
+    border-left: 4px solid #6cff6c;
+  }
+
   textarea {
     width: 90%;
     max-width: 600px;
@@ -99,8 +106,8 @@
 
 <h1>🕊️ SOS Shelter Messages</h1>
 <div id="statusBar">🔴 Offline</div>
-<p>Offline message board for your shelter.  
-Messages are saved locally on this device.</p>
+<p>Offline message board for your shelter.<br>
+Messages will be sent automatically when online.</p>
 
 <div id="messages"></div>
 
@@ -117,45 +124,57 @@ Messages are saved locally on this device.</p>
   const clearBtn = document.getElementById('clearBtn');
   const statusBar = document.getElementById('statusBar');
 
-  function updateStatus() {
-    if (navigator.onLine) {
-      statusBar.textContent = '🟢 Online';
-      statusBar.style.color = '#9fff9f';
-    } else {
-      statusBar.textContent = '🔴 Offline';
-      statusBar.style.color = '#ff9f9f';
-    }
-  }
-
-  window.addEventListener('online', updateStatus);
-  window.addEventListener('offline', updateStatus);
-
+  // Load saved messages
   function loadMessages() {
     const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
     messageBox.innerHTML = '';
-    stored.forEach(msg => addMessageToDOM(msg.text, msg.time));
+    stored.forEach(msg => addMessageToDOM(msg.text, msg.time, msg.status));
   }
 
-  function addMessageToDOM(text, time) {
+  // Add message to DOM
+  function addMessageToDOM(text, time, status) {
     const div = document.createElement('div');
-    div.className = 'message';
-    div.innerHTML = `<span>${text}</span><small>${time}</small>`;
+    div.className = 'message ' + (status === 'sent' ? 'sent' : 'pending');
+    const statusText = status === 'sent' ? '✅ Sent' : '⏳ Pending';
+    div.innerHTML = `<span>${text}</span><small>${time} — ${statusText}</small>`;
     messageBox.appendChild(div);
   }
 
-  function saveMessage(text) {
+  // Save locally
+  function saveMessage(text, status='pending') {
     const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
     const time = new Date().toLocaleString();
-    stored.push({ text, time });
+    const msg = { text, time, status };
+    stored.push(msg);
     localStorage.setItem('sosMessages', JSON.stringify(stored));
-    addMessageToDOM(text, time);
+    addMessageToDOM(text, time, status);
   }
 
+  // Simulated send to server
+  async function trySendMessages() {
+    const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
+    let updated = false;
+    for (let msg of stored) {
+      if (msg.status === 'pending' && navigator.onLine) {
+        // Placeholder: replace with real send function later
+        console.log('Simulating send:', msg.text);
+        msg.status = 'sent';
+        updated = true;
+      }
+    }
+    if (updated) {
+      localStorage.setItem('sosMessages', JSON.stringify(stored));
+      loadMessages();
+    }
+  }
+
+  // Buttons
   sendBtn.addEventListener('click', () => {
     const text = messageInput.value.trim();
     if (!text) return;
-    saveMessage(text);
+    saveMessage(text, navigator.onLine ? 'sent' : 'pending');
     messageInput.value = '';
+    if (navigator.onLine) trySendMessages();
   });
 
   clearBtn.addEventListener('click', () => {
@@ -165,6 +184,22 @@ Messages are saved locally on this device.</p>
     }
   });
 
+  // Status updates
+  function updateStatus() {
+    if (navigator.onLine) {
+      statusBar.textContent = '🟢 Online';
+      statusBar.style.color = '#9fff9f';
+      trySendMessages();
+    } else {
+      statusBar.textContent = '🔴 Offline';
+      statusBar.style.color = '#ff9f9f';
+    }
+  }
+
+  window.addEventListener('online', updateStatus);
+  window.addEventListener('offline', updateStatus);
+
+  // Init
   updateStatus();
   loadMessages();
 </script>
