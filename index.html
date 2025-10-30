@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOS ✝️ – Built in Christ</title>
+  <meta name="description" content="SOS – a sanctuary of faith, safety, and connection in times of crisis. Built in Christ." />
+  <meta name="keywords" content="SOS, Faith, Safety, Shelters, Radio, Family, Christ, Hope, Emergency" />
+  <meta name="author" content="Magnus T Gustav Sandberg" />
+  <link rel="icon" type="image/png" href="public/sos_logo.png" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/header.css" />
+  <link rel="stylesheet" href="styles/footer.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: linear-gradient(to bottom, #071427, #101d33);
+      color: #f1f4ff;
+      text-align: center;
+    }
+
+    h1, h2, h3 {
+      color: #ffe57f;
+      text-shadow: 0 0 12px rgba(255, 255, 200, 0.5);
+    }
+
+    .hero {
+      padding: 100px 20px 60px;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.05), transparent);
+    }
+
+    .hero-logo {
+      width: 120px;
+      height: auto;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.6));
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: #e0e6ff;
+    }
+
+    .hero-buttons {
+      margin-top: 30px;
+    }
+
+    .hero-btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 14px 32px;
+      border-radius: 50px;
+      background: linear-gradient(90deg, #ffd85c, #ffb347);
+      color: #001533;
+      font-weight: bold;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 0 12px rgba(255,255,255,0.3);
+    }
+
+    .hero-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 24px rgba(255,255,255,0.6);
+    }
+
+    /* 🔸 Alert banner */
+    .alert-banner {
+      background: #ff3b3b;
+      color: #fff;
+      padding: 12px 8px;
+      font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 0 10px rgba(255,0,0,0.4);
+    }
+
+    /* 🔹 Faith section */
+    .faith-section {
+      background: rgba(255,255,255,0.08);
+      border-radius: 16px;
+      max-width: 800px;
+      margin: 60px auto;
+      padding: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
+
+    .faith-section blockquote {
+      font-style: italic;
+      color: #e6ebff;
+      margin: 20px auto;
+      border-left: 4px solid #ffd85c;
+      padding-left: 16px;
+      text-align: left;
+      line-height: 1.6;
+    }
+
+    /* 🧩 Help cards */
+    .help-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 0 20px;
+    }
+
+    .help-card {
+      background: rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .help-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 18px rgba(255,255,255,0.3);
+    }
+
+    .help-card h3 {
+      margin-bottom: 10px;
+    }
+
+    .help-card p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #e0e6ff;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 🔹 Global header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch("includes/header.html")
+      .then(r => r.text())
+      .then(h => (document.getElementById("header-placeholder").innerHTML = h));
+  </script>
+
+  <!-- 🔺 Live Alert -->
+  <div class="alert-banner">
+    ⚠️ Live Alert: Missile activity detected in Eastern region – stay sheltered and tune in to SOS Radio 📡
+  </div>
+
+  <main>
+    <!-- 🌅 Hero -->
+    <section class="hero">
+      <img src="public/sos_logo.png" alt="SOS logo" class="hero-logo" />
+      <h1>When chaos reigns, faith remains.</h1>
+      <p>A sanctuary of hope, safety and love — built in Christ ✝️</p>
+
+      <div class="hero-buttons">
+        <a href="radio.html" class="hero-btn">Open Radio 📡</a>
+        <a href="shelters.html" class="hero-btn">Find Shelters 🛡️</a>
+        <a href="faith.html" class="hero-btn">Prayer & Faith ✝️</a>
+        <a href="family.html" class="hero-btn">Family ❤️</a>
+        <a href="news.html" class="hero-btn">Emergency News ⚠️</a>
+      </div>
+    </section>
+
+    <!-- ✝️ Faith & Hope Block -->
+    <section class="faith-section">
+      <h2>Faith Over Fear</h2>
+      <blockquote>
+        “Even though I walk through the valley of the shadow of death,  
+        I will fear no evil, for You are with me;  
+        Your rod and Your staff, they comfort me.”  
+        — Psalm 23:4
+      </blockquote>
+      <p>
+        In the darkest nights, His light still shines.  
+        SOS exists to connect, protect, and bring peace to every soul in need.  
+        Together, in faith and love, we stand unshaken.
+      </p>
+    </section>
+
+    <!-- 🤝 Help & Community -->
+    <section class="help-section">
+      <div class="help-card">
+        <h3>📍 Share Location</h3>
+        <p>Send your location to nearby rescue teams or community members.</p>
+      </div>
+
+      <div class="help-card">
+        <h3>📦 Send Help</h3>
+        <p>Offer food, shelter, or emergency assistance to families in need.</p>
+      </div>
+
+      <div class="help-card">
+        <h3>🙏 Pray Together</h3>
+        <p>Join live prayer sessions and support each other through faith.</p>
+      </div>
+
+      <div class="help-card">
+        <h3>🤲 Volunteer</h3>
+        <p>Help coordinate local safety zones and assist families in crisis.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- 🔹 Global footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch("includes/footer.html")
+      .then(r => r.text())
+      .then(f => (document.getElementById("footer-placeholder").innerHTML = f))
+      .catch(() => console.warn("Footer could not be loaded."));
+  </script>
+</body>
+</html>
