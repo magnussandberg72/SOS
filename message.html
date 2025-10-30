@@ -31,6 +31,21 @@
     margin: 0 auto 15px;
   }
 
+  input, textarea {
+    width: 90%;
+    max-width: 600px;
+    border-radius: 8px;
+    border: none;
+    padding: 10px;
+    margin: 5px 0;
+    font-size: 1rem;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    outline: none;
+  }
+
+  textarea { height: 80px; resize: none; }
+
   #messages {
     background: rgba(255,255,255,0.08);
     border-radius: 12px;
@@ -56,26 +71,8 @@
     margin-top: 4px;
   }
 
-  .pending {
-    border-left: 4px solid orange;
-  }
-  .sent {
-    border-left: 4px solid #6cff6c;
-  }
-
-  textarea {
-    width: 90%;
-    max-width: 600px;
-    height: 80px;
-    border-radius: 8px;
-    border: none;
-    padding: 10px;
-    font-size: 1rem;
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    resize: none;
-    outline: none;
-  }
+  .pending { border-left: 4px solid orange; }
+  .sent { border-left: 4px solid #6cff6c; }
 
   button {
     margin-top: 10px;
@@ -106,41 +103,59 @@
 
 <h1>🕊️ SOS Shelter Messages</h1>
 <div id="statusBar">🔴 Offline</div>
+
+<!-- Shelter identity -->
+<input id="shelterName" placeholder="Shelter name (e.g. Kalix Church)" />
+<input id="shelterStatus" placeholder="Status (e.g. 8 people, 2 injured, low water)" />
+
 <p>Offline message board for your shelter.<br>
-Messages will be sent automatically when online.</p>
+Messages are saved locally and exported if needed.</p>
 
 <div id="messages"></div>
 
 <textarea id="messageInput" placeholder="Write your message here..."></textarea><br />
 <button id="sendBtn">Send Message</button>
+<button id="exportBtn">Export Log</button>
 <button id="clearBtn">Clear All</button>
 
 <footer>Built in Christ ✝️ | SOS Communication Board</footer>
 
 <script>
-  const messageBox = document.getElementById('messages');
-  const messageInput = document.getElementById('messageInput');
+  const msgBox = document.getElementById('messages');
+  const input = document.getElementById('messageInput');
   const sendBtn = document.getElementById('sendBtn');
   const clearBtn = document.getElementById('clearBtn');
+  const exportBtn = document.getElementById('exportBtn');
   const statusBar = document.getElementById('statusBar');
+  const shelterName = document.getElementById('shelterName');
+  const shelterStatus = document.getElementById('shelterStatus');
 
-  // Load saved messages
-  function loadMessages() {
-    const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
-    messageBox.innerHTML = '';
-    stored.forEach(msg => addMessageToDOM(msg.text, msg.time, msg.status));
+  // Load previous info
+  shelterName.value = localStorage.getItem('shelterName') || '';
+  shelterStatus.value = localStorage.getItem('shelterStatus') || '';
+
+  function saveShelterInfo() {
+    localStorage.setItem('shelterName', shelterName.value.trim());
+    localStorage.setItem('shelterStatus', shelterStatus.value.trim());
   }
 
-  // Add message to DOM
+  shelterName.addEventListener('input', saveShelterInfo);
+  shelterStatus.addEventListener('input', saveShelterInfo);
+
+  function loadMessages() {
+    const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
+    msgBox.innerHTML = '';
+    stored.forEach(m => addMessageToDOM(m.text, m.time, m.status));
+  }
+
   function addMessageToDOM(text, time, status) {
     const div = document.createElement('div');
     div.className = 'message ' + (status === 'sent' ? 'sent' : 'pending');
-    const statusText = status === 'sent' ? '✅ Sent' : '⏳ Pending';
-    div.innerHTML = `<span>${text}</span><small>${time} — ${statusText}</small>`;
-    messageBox.appendChild(div);
+    const sText = status === 'sent' ? '✅ Sent' : '⏳ Pending';
+    div.innerHTML = `<span>${text}</span><small>${time} — ${sText}</small>`;
+    msgBox.appendChild(div);
   }
 
-  // Save locally
   function saveMessage(text, status='pending') {
     const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
     const time = new Date().toLocaleString();
@@ -150,41 +165,56 @@ Messages will be sent automatically when online.</p>
     addMessageToDOM(text, time, status);
   }
 
-  // Simulated send to server
   async function trySendMessages() {
     const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
-    let updated = false;
+    let changed = false;
     for (let msg of stored) {
       if (msg.status === 'pending' && navigator.onLine) {
-        // Placeholder: replace with real send function later
-        console.log('Simulating send:', msg.text);
         msg.status = 'sent';
-        updated = true;
+        changed = true;
       }
     }
-    if (updated) {
+    if (changed) {
       localStorage.setItem('sosMessages', JSON.stringify(stored));
       loadMessages();
     }
   }
 
-  // Buttons
   sendBtn.addEventListener('click', () => {
-    const text = messageInput.value.trim();
+    const text = input.value.trim();
     if (!text) return;
     saveMessage(text, navigator.onLine ? 'sent' : 'pending');
-    messageInput.value = '';
+    input.value = '';
     if (navigator.onLine) trySendMessages();
   });
 
   clearBtn.addEventListener('click', () => {
     if (confirm('Clear all local messages?')) {
       localStorage.removeItem('sosMessages');
-      messageBox.innerHTML = '';
+      msgBox.innerHTML = '';
     }
   });
 
-  // Status updates
+  exportBtn.addEventListener('click', () => {
+    const name = shelterName.value || 'Unknown Shelter';
+    const status = shelterStatus.value || 'No status provided';
+    const msgs = JSON.parse(localStorage.getItem('sosMessages') || '[]');
+    let content = `SOS SHELTER LOG\nGenerated: ${new Date().toLocaleString()}\n\n`;
+    content += `Shelter: ${name}\nStatus: ${status}\n\n`;
+
+    if (msgs.length === 0) content += 'No messages recorded.\n';
+    msgs.forEach((m,i) => {
+      content += `#${i+1}\nTime: ${m.time}\nStatus: ${m.status}\nMessage: ${m.text}\n\n`;
+    });
+
+    const blob = new Blob([content], {type: "text/plain"});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    const date = new Date().toISOString().split('T')[0];
+    link.download = `sos_shelter_log_${date}.txt`;
+    link.click();
+  });
+
   function updateStatus() {
     if (navigator.onLine) {
       statusBar.textContent = '🟢 Online';
@@ -199,7 +229,6 @@ Messages will be sent automatically when online.</p>
   window.addEventListener('online', updateStatus);
   window.addEventListener('offline', updateStatus);
 
-  // Init
   updateStatus();
   loadMessages();
 </script>
