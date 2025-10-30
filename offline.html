@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Offline ✝️ – SOS App</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: radial-gradient(circle at center, #0b1528 40%, #000814 100%);
+    color: #eaf4ff;
+    text-align: center;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+  }
+  img {
+    width: 100px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.4));
+  }
+  h1 {
+    color: #ffd85c;
+    text-shadow: 0 0 12px rgba(255,255,150,0.5);
+  }
+  p {
+    line-height: 1.6;
+    color: #cfe0ff;
+    max-width: 600px;
+    margin: 10px auto;
+  }
+  .btn {
+    margin-top: 20px;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(90deg,#ffd85c,#ffb347);
+    color: #001a33;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    transition: all .2s ease;
+  }
+  .btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,0.5); }
+  footer {
+    position: fixed;
+    bottom: 12px;
+    left: 0;
+    right: 0;
+    font-size: 0.85rem;
+    color: #9fb8ff;
+  }
+</style>
+</head>
+<body>
+  <img src="public/sos_logo.png" alt="SOS logo" />
+  <h1>🔴 Offline Mode Active</h1>
+  <p>The network connection is lost.<br/>
+  Stay calm, pray, and wait for the signal to return.<br/>
+  Messages you write will be safely stored and sent when online again.</p>
+
+  <button class="btn" onclick="window.location.reload()">🔁 Try Again</button>
+
+  <footer>✝️ “The light shines in the darkness, and the darkness has not overcome it.” — John 1:5</footer>
+</body>
+</html>
