@@ -19,6 +19,18 @@
     text-shadow: 0 0 10px rgba(255,255,150,0.5);
   }
 
+  #statusBar {
+    position: sticky;
+    top: 0;
+    background: rgba(0,0,0,0.5);
+    padding: 8px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    width: fit-content;
+    margin: 0 auto 15px;
+  }
+
   #messages {
     background: rgba(255,255,255,0.08);
     border-radius: 12px;
@@ -86,6 +98,7 @@
 <body>
 
 <h1>🕊️ SOS Shelter Messages</h1>
+<div id="statusBar">🔴 Offline</div>
 <p>Offline message board for your shelter.  
 Messages are saved locally on this device.</p>
 
@@ -102,6 +115,20 @@ Messages are saved locally on this device.</p>
   const messageInput = document.getElementById('messageInput');
   const sendBtn = document.getElementById('sendBtn');
   const clearBtn = document.getElementById('clearBtn');
+  const statusBar = document.getElementById('statusBar');
+
+  function updateStatus() {
+    if (navigator.onLine) {
+      statusBar.textContent = '🟢 Online';
+      statusBar.style.color = '#9fff9f';
+    } else {
+      statusBar.textContent = '🔴 Offline';
+      statusBar.style.color = '#ff9f9f';
+    }
+  }
+
+  window.addEventListener('online', updateStatus);
+  window.addEventListener('offline', updateStatus);
 
   function loadMessages() {
     const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
@@ -138,6 +165,7 @@ Messages are saved locally on this device.</p>
     }
   });
 
+  updateStatus();
   loadMessages();
 </script>
 </body>
