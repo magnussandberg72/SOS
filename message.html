@@ -5,232 +5,312 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>SOS ✝️ – Shelter Messages</title>
 <style>
-  body {
-    font-family: system-ui, sans-serif;
-    background: #0b1528;
-    color: #f5f7ff;
-    margin: 0;
-    padding: 20px;
-    text-align: center;
-  }
+  body { font-family: system-ui, sans-serif; background:#0b1528; color:#f5f7ff; margin:0; padding:20px; text-align:center; }
+  h1 { color:#ffe57f; text-shadow:0 0 10px rgba(255,255,150,.5); }
+  #statusBar { position:sticky; top:0; background:rgba(0,0,0,.5); padding:8px; font-weight:bold; border-radius:8px; width:fit-content; margin:0 auto 15px; }
+  input,textarea{ width:90%; max-width:600px; border-radius:8px; border:none; padding:10px; margin:5px 0; font-size:1rem; background:rgba(255,255,255,.1); color:#fff; outline:none; }
+  textarea{ height:80px; resize:none; }
+  #messages{ background:rgba(255,255,255,.08); border-radius:12px; padding:15px; max-width:600px; margin:20px auto; text-align:left; min-height:200px; box-shadow:0 0 10px rgba(0,0,0,.4); }
+  .message{ background:rgba(0,0,0,.3); margin:8px 0; padding:10px; border-radius:8px; }
+  .message small{ display:block; font-size:.8em; color:#bbb; margin-top:4px; }
+  .pending{ border-left:4px solid orange; }
+  .sent{ border-left:4px solid #6cff6c; }
+  .received{ border-left:4px solid #7fd0ff; }
+  button{ margin-top:10px; padding:10px 30px; font-weight:bold; background:linear-gradient(90deg,#ffd85c,#ffb347); border:none; border-radius:30px; color:#001533; cursor:pointer; box-shadow:0 0 10px rgba(255,255,255,.3); transition:all .2s ease; }
+  button:hover{ transform:scale(1.05); box-shadow:0 0 20px rgba(255,255,255,.5); }
+  #qrBox{ margin-top:25px; }
+  footer{ margin-top:40px; font-size:.9rem; color:#ccc; }
 
-  h1 {
-    color: #ffe57f;
-    text-shadow: 0 0 10px rgba(255,255,150,0.5);
-  }
-
-  #statusBar {
-    position: sticky;
-    top: 0;
-    background: rgba(0,0,0,0.5);
-    padding: 8px;
-    font-weight: bold;
-    font-size: 0.95rem;
-    border-radius: 8px;
-    width: fit-content;
-    margin: 0 auto 15px;
-  }
-
-  input, textarea {
-    width: 90%;
-    max-width: 600px;
-    border-radius: 8px;
-    border: none;
-    padding: 10px;
-    margin: 5px 0;
-    font-size: 1rem;
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    outline: none;
-  }
-
-  textarea { height: 80px; resize: none; }
-
-  #messages {
-    background: rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 15px;
-    max-width: 600px;
-    margin: 20px auto;
-    text-align: left;
-    min-height: 200px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.4);
-  }
-
-  .message {
-    background: rgba(0,0,0,0.3);
-    margin: 8px 0;
-    padding: 10px;
-    border-radius: 8px;
-  }
-
-  .message small {
-    display: block;
-    font-size: 0.8em;
-    color: #bbb;
-    margin-top: 4px;
-  }
-
-  .pending { border-left: 4px solid orange; }
-  .sent { border-left: 4px solid #6cff6c; }
-
-  button {
-    margin-top: 10px;
-    padding: 10px 30px;
-    font-weight: bold;
-    background: linear-gradient(90deg,#ffd85c,#ffb347);
-    border: none;
-    border-radius: 30px;
-    color: #001533;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(255,255,255,0.3);
-    transition: all 0.2s ease;
-  }
-
-  button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255,255,255,0.5);
-  }
-
-  footer {
-    margin-top: 40px;
-    font-size: 0.9rem;
-    color: #ccc;
-  }
+  /* Scanner UI */
+  .scanControls { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  #scanArea { display:none; margin:16px auto; max-width:620px; }
+  #video { width:100%; max-width:600px; border-radius:12px; box-shadow:0 0 10px rgba(0,0,0,.5); background:#000; }
+  #scanNote { font-size:.9rem; color:#cfe8ff; margin-top:6px; }
+  #importPreview { white-space:pre-wrap; text-align:left; background:rgba(255,255,255,.06); padding:12px; border-radius:8px; max-width:600px; margin:12px auto 0; }
+  #fallbackBox { display:none; max-width:600px; margin:12px auto 0; }
+  #fallbackText { height:120px; }
 </style>
 </head>
 <body>
-
 <h1>🕊️ SOS Shelter Messages</h1>
 <div id="statusBar">🔴 Offline</div>
 
-<!-- Shelter identity -->
 <input id="shelterName" placeholder="Shelter name (e.g. Kalix Church)" />
 <input id="shelterStatus" placeholder="Status (e.g. 8 people, 2 injured, low water)" />
 
-<p>Offline message board for your shelter.<br>
-Messages are saved locally and exported if needed.</p>
+<p>Offline message board for your shelter.<br/>Messages are saved locally and can be exported or shared via QR.</p>
 
 <div id="messages"></div>
 
 <textarea id="messageInput" placeholder="Write your message here..."></textarea><br />
-<button id="sendBtn">Send Message</button>
-<button id="exportBtn">Export Log</button>
-<button id="clearBtn">Clear All</button>
+<div class="scanControls">
+  <button id="sendBtn">Send Message</button>
+  <button id="showQR">Show QR</button>
+  <button id="scanQR">Scan QR</button>
+  <button id="exportBtn">Export Log</button>
+  <button id="clearBtn">Clear All</button>
+</div>
+
+<!-- Scanner / Import area -->
+<div id="scanArea">
+  <video id="video" playsinline></video>
+  <div id="scanNote">Point the camera at the QR code. The text will appear below for confirmation.</div>
+  <div id="importPreview"></div>
+  <div class="scanControls">
+    <button id="confirmImport" disabled>Import to Log</button>
+    <button id="stopScan">Stop</button>
+    <button id="toggleFallback">Manual Paste</button>
+  </div>
+  <div id="fallbackBox">
+    <textarea id="fallbackText" placeholder="Paste QR text here (manual fallback)"></textarea>
+    <div class="scanControls">
+      <button id="importFallback">Import Pasted</button>
+    </div>
+  </div>
+</div>
+
+<div id="qrBox"></div>
 
 <footer>Built in Christ ✝️ | SOS Communication Board</footer>
 
+<!-- ultra-simple QR draw (export) -->
 <script>
-  const msgBox = document.getElementById('messages');
-  const input = document.getElementById('messageInput');
-  const sendBtn = document.getElementById('sendBtn');
-  const clearBtn = document.getElementById('clearBtn');
-  const exportBtn = document.getElementById('exportBtn');
-  const statusBar = document.getElementById('statusBar');
-  const shelterName = document.getElementById('shelterName');
-  const shelterStatus = document.getElementById('shelterStatus');
+function QR8bitByte(data){this.mode=1,this.data=data,this.parsedData=[];for(let i=0;i<this.data.length;i++){this.parsedData.push(this.data.charCodeAt(i))}}
+function QRCodeModel(t,e){this.typeNumber=t,this.errorCorrectLevel=e,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}
+QRCodeModel.prototype.addData=function(t){this.dataList.push(new QR8bitByte(t))}
+QRCodeModel.prototype.make=function(){this.moduleCount=21;this.modules=Array.from({length:this.moduleCount},()=>Array(this.moduleCount).fill(null));for(let r=0;r<this.moduleCount;r++){for(let c=0;c<this.moduleCount;c++){this.modules[r][c]=((r+c)%3===0)}}}
+QRCodeModel.prototype.isDark=function(r,c){return this.modules[r][c]}
+QRCodeModel.prototype.getModuleCount=function(){return this.moduleCount}
+function createQRCanvas(text){
+  const qr=new QRCodeModel(1,1); qr.addData(text); qr.make();
+  const count=qr.getModuleCount(), scale=8, size=count*scale;
+  const cv=document.createElement('canvas'); cv.width=size; cv.height=size;
+  const ctx=cv.getContext('2d');
+  for(let r=0;r<count;r++){for(let c=0;c<count;c++){
+    ctx.fillStyle=qr.isDark(r,c)?'#000':'#fff'; ctx.fillRect(c*scale,r*scale,scale,scale);
+  }}
+  return cv;
+}
+</script>
 
-  // Load previous info
-  shelterName.value = localStorage.getItem('shelterName') || '';
-  shelterStatus.value = localStorage.getItem('shelterStatus') || '';
+<script>
+const msgBox=document.getElementById('messages'),
+      input=document.getElementById('messageInput'),
+      sendBtn=document.getElementById('sendBtn'),
+      clearBtn=document.getElementById('clearBtn'),
+      exportBtn=document.getElementById('exportBtn'),
+      showQR=document.getElementById('showQR'),
+      scanQR=document.getElementById('scanQR'),
+      scanArea=document.getElementById('scanArea'),
+      video=document.getElementById('video'),
+      statusBar=document.getElementById('statusBar'),
+      shelterName=document.getElementById('shelterName'),
+      shelterStatus=document.getElementById('shelterStatus'),
+      qrBox=document.getElementById('qrBox'),
+      importPreview=document.getElementById('importPreview'),
+      confirmImport=document.getElementById('confirmImport'),
+      stopScan=document.getElementById('stopScan'),
+      toggleFallback=document.getElementById('toggleFallback'),
+      fallbackBox=document.getElementById('fallbackBox'),
+      fallbackText=document.getElementById('fallbackText'),
+      importFallback=document.getElementById('importFallback');
 
-  function saveShelterInfo() {
-    localStorage.setItem('shelterName', shelterName.value.trim());
-    localStorage.setItem('shelterStatus', shelterStatus.value.trim());
+let scanStream=null, scanning=false, lastDetectedText='';
+
+// Persist shelter meta
+shelterName.value=localStorage.getItem('shelterName')||'';
+shelterStatus.value=localStorage.getItem('shelterStatus')||'';
+function saveInfo(){
+  localStorage.setItem('shelterName', (shelterName.value||'').trim());
+  localStorage.setItem('shelterStatus', (shelterStatus.value||'').trim());
+}
+shelterName.addEventListener('input',saveInfo);
+shelterStatus.addEventListener('input',saveInfo);
+
+// Messages
+function loadMessages(){
+  const stored=JSON.parse(localStorage.getItem('sosMessages')||'[]');
+  msgBox.innerHTML='';
+  stored.forEach(m=>addMsg(m.text,m.time,m.status));
+}
+function addMsg(text,time,status){
+  const div=document.createElement('div');
+  const cls = status==='sent'?'sent' : status==='received'?'received':'pending';
+  div.className='message '+cls;
+  const s = status==='sent'?'✅ Sent' : status==='received'?'📥 Received' : '⏳ Pending';
+  div.innerHTML=`<span>${text}</span><small>${time} — ${s}</small>`;
+  msgBox.appendChild(div);
+}
+function saveMsg(text,status='pending',timeOverride=null){
+  const arr=JSON.parse(localStorage.getItem('sosMessages')||'[]');
+  const time=timeOverride || new Date().toLocaleString();
+  const msg={text, time, status};
+  arr.push(msg);
+  localStorage.setItem('sosMessages', JSON.stringify(arr));
+  addMsg(text, time, status);
+}
+
+// Simulated send (will mark pending→sent when online)
+async function trySend(){
+  const arr=JSON.parse(localStorage.getItem('sosMessages')||'[]');
+  let changed=false;
+  for(let m of arr){
+    if(m.status==='pending' && navigator.onLine){
+      m.status='sent'; changed=true;
+    }
+  }
+  if(changed){ localStorage.setItem('sosMessages', JSON.stringify(arr)); loadMessages(); }
+}
+
+// UI actions
+sendBtn.onclick=()=>{
+  const t=input.value.trim();
+  if(!t) return;
+  saveMsg(t, navigator.onLine?'sent':'pending');
+  input.value='';
+  if(navigator.onLine) trySend();
+};
+
+clearBtn.onclick=()=>{
+  if(confirm('Clear all local messages?')){
+    localStorage.removeItem('sosMessages');
+    msgBox.innerHTML=''; qrBox.innerHTML='';
+  }
+};
+
+exportBtn.onclick=()=>{
+  const name=shelterName.value || 'Unknown Shelter';
+  const status=shelterStatus.value || 'No status provided';
+  const msgs=JSON.parse(localStorage.getItem('sosMessages')||'[]');
+  let content = `SOS SHELTER LOG\nGenerated: ${new Date().toLocaleString()}\n\nShelter: ${name}\nStatus: ${status}\n\n`;
+  if(msgs.length===0) content += 'No messages recorded.\n';
+  msgs.forEach((m,i)=>{ content += `#${i+1}\nTime: ${m.time}\nStatus: ${m.status}\nMessage: ${m.text}\n\n`; });
+  const blob=new Blob([content],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  const date=new Date().toISOString().split('T')[0];
+  a.download=`sos_shelter_log_${date}.txt`;
+  a.click();
+};
+
+// QR export
+showQR.onclick=()=>{
+  qrBox.innerHTML='';
+  const name=shelterName.value||'Unknown Shelter';
+  const stat=shelterStatus.value||'No status';
+  const msgs=JSON.parse(localStorage.getItem('sosMessages')||'[]');
+  const last=msgs.slice(-3);
+  let text=`SOS SHELTER REPORT\n${new Date().toLocaleString()}\nShelter:${name}\nStatus:${stat}\n\n`;
+  last.forEach((m,i)=> text += `#${i+1} ${m.time}: ${m.text}\n`);
+  const canvas=createQRCanvas(text);
+  qrBox.appendChild(canvas);
+  const note=document.createElement('p'); note.textContent='Show this QR to a messenger or SOS team to import.';
+  qrBox.appendChild(note);
+};
+
+// Online status
+function updateStatus(){
+  if(navigator.onLine){
+    statusBar.textContent='🟢 Online'; statusBar.style.color='#9fff9f'; trySend();
+  }else{
+    statusBar.textContent='🔴 Offline'; statusBar.style.color='#ff9f9f';
+  }
+}
+window.addEventListener('online',updateStatus);
+window.addEventListener('offline',updateStatus);
+updateStatus(); loadMessages();
+
+// ===== QR IMPORT (BarcodeDetector) =====
+const hasBarcodeDetector = ('BarcodeDetector' in window);
+let detector = null;
+if(hasBarcodeDetector){
+  try {
+    detector = new BarcodeDetector({ formats: ['qr_code'] });
+  } catch(_) { detector = null; }
+}
+
+scanQR.onclick = async ()=>{
+  qrBox.innerHTML='';
+  importPreview.textContent=''; confirmImport.disabled = true; lastDetectedText='';
+  fallbackBox.style.display='none';
+  scanArea.style.display='block';
+
+  if(!hasBarcodeDetector || !detector){
+    // No detector: show fallback UI (manual paste)
+    document.getElementById('scanNote').textContent = 'Camera QR scanning not supported on this device. Use Manual Paste.';
+    return;
   }
 
-  shelterName.addEventListener('input', saveShelterInfo);
-  shelterStatus.addEventListener('input', saveShelterInfo);
-
-  function loadMessages() {
-    const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
-    msgBox.innerHTML = '';
-    stored.forEach(m => addMessageToDOM(m.text, m.time, m.status));
+  try {
+    scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    video.srcObject = scanStream; await video.play();
+    scanning = true; scanLoop();
+  } catch(err){
+    document.getElementById('scanNote').textContent = 'Camera access denied/unavailable. Use Manual Paste.';
   }
+};
 
-  function addMessageToDOM(text, time, status) {
-    const div = document.createElement('div');
-    div.className = 'message ' + (status === 'sent' ? 'sent' : 'pending');
-    const sText = status === 'sent' ? '✅ Sent' : '⏳ Pending';
-    div.innerHTML = `<span>${text}</span><small>${time} — ${sText}</small>`;
-    msgBox.appendChild(div);
-  }
-
-  function saveMessage(text, status='pending') {
-    const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
-    const time = new Date().toLocaleString();
-    const msg = { text, time, status };
-    stored.push(msg);
-    localStorage.setItem('sosMessages', JSON.stringify(stored));
-    addMessageToDOM(text, time, status);
-  }
-
-  async function trySendMessages() {
-    const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
-    let changed = false;
-    for (let msg of stored) {
-      if (msg.status === 'pending' && navigator.onLine) {
-        msg.status = 'sent';
-        changed = true;
+async function scanLoop(){
+  if(!scanning || !detector) return;
+  try {
+    const barcodes = await detector.detect(video);
+    if(barcodes && barcodes.length){
+      const txt = (barcodes[0].rawValue||'').trim();
+      if(txt && txt !== lastDetectedText){
+        lastDetectedText = txt;
+        importPreview.textContent = txt;
+        confirmImport.disabled = false;
       }
     }
-    if (changed) {
-      localStorage.setItem('sosMessages', JSON.stringify(stored));
-      loadMessages();
-    }
+  } catch(_) { /* ignore */ }
+  if(scanning){ requestAnimationFrame(scanLoop); }
+}
+
+stopScan.onclick = ()=>{
+  stopScanner();
+  scanArea.style.display='none';
+};
+
+function stopScanner(){
+  scanning = false;
+  if(video.srcObject){
+    video.pause();
+    video.srcObject.getTracks().forEach(t=>t.stop());
+    video.srcObject = null;
   }
+}
 
-  sendBtn.addEventListener('click', () => {
-    const text = input.value.trim();
-    if (!text) return;
-    saveMessage(text, navigator.onLine ? 'sent' : 'pending');
-    input.value = '';
-    if (navigator.onLine) trySendMessages();
-  });
+toggleFallback.onclick = ()=>{
+  fallbackBox.style.display = (fallbackBox.style.display==='none'?'block':'none');
+};
 
-  clearBtn.addEventListener('click', () => {
-    if (confirm('Clear all local messages?')) {
-      localStorage.removeItem('sosMessages');
-      msgBox.innerHTML = '';
-    }
-  });
+importFallback.onclick = ()=>{
+  const txt = (fallbackText.value||'').trim();
+  if(!txt) return;
+  importPreview.textContent = txt;
+  confirmImport.disabled = false;
+};
 
-  exportBtn.addEventListener('click', () => {
-    const name = shelterName.value || 'Unknown Shelter';
-    const status = shelterStatus.value || 'No status provided';
-    const msgs = JSON.parse(localStorage.getItem('sosMessages') || '[]');
-    let content = `SOS SHELTER LOG\nGenerated: ${new Date().toLocaleString()}\n\n`;
-    content += `Shelter: ${name}\nStatus: ${status}\n\n`;
+confirmImport.onclick = ()=>{
+  const txt = importPreview.textContent.trim();
+  if(!txt) return;
 
-    if (msgs.length === 0) content += 'No messages recorded.\n';
-    msgs.forEach((m,i) => {
-      content += `#${i+1}\nTime: ${m.time}\nStatus: ${m.status}\nMessage: ${m.text}\n\n`;
-    });
+  // Parse minimal fields from our export format (best-effort)
+  const shelterLine = (txt.match(/Shelter:(.*)/i)||[])[1]?.trim() || 'Unknown Shelter';
+  const statusLine  = (txt.match(/Status:(.*)/i)||[])[1]?.trim() || 'Unknown Status';
 
-    const blob = new Blob([content], {type: "text/plain"});
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    const date = new Date().toISOString().split('T')[0];
-    link.download = `sos_shelter_log_${date}.txt`;
-    link.click();
-  });
+  // Store a single summarized "received" entry
+  const summary = `Imported from "${shelterLine}" — status: ${statusLine}\n\n` + txt;
+  saveMsg(summary, 'received');
 
-  function updateStatus() {
-    if (navigator.onLine) {
-      statusBar.textContent = '🟢 Online';
-      statusBar.style.color = '#9fff9f';
-      trySendMessages();
-    } else {
-      statusBar.textContent = '🔴 Offline';
-      statusBar.style.color = '#ff9f9f';
-    }
-  }
-
-  window.addEventListener('online', updateStatus);
-  window.addEventListener('offline', updateStatus);
-
-  updateStatus();
-  loadMessages();
+  // UI cleanup
+  alert('Imported into local log.');
+  confirmImport.disabled = true;
+  importPreview.textContent = '';
+  fallbackText.value = '';
+  stopScanner();
+  scanArea.style.display='none';
+};
 </script>
 </body>
 </html>
