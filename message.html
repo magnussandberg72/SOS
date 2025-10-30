@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SOS ✝️ – Shelter Messages</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #0b1528;
+    color: #f5f7ff;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+
+  h1 {
+    color: #ffe57f;
+    text-shadow: 0 0 10px rgba(255,255,150,0.5);
+  }
+
+  #messages {
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 15px;
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: left;
+    min-height: 200px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  }
+
+  .message {
+    background: rgba(0,0,0,0.3);
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  .message small {
+    display: block;
+    font-size: 0.8em;
+    color: #bbb;
+    margin-top: 4px;
+  }
+
+  textarea {
+    width: 90%;
+    max-width: 600px;
+    height: 80px;
+    border-radius: 8px;
+    border: none;
+    padding: 10px;
+    font-size: 1rem;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    resize: none;
+    outline: none;
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 10px 30px;
+    font-weight: bold;
+    background: linear-gradient(90deg,#ffd85c,#ffb347);
+    border: none;
+    border-radius: 30px;
+    color: #001533;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    transition: all 0.2s ease;
+  }
+
+  button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255,255,255,0.5);
+  }
+
+  footer {
+    margin-top: 40px;
+    font-size: 0.9rem;
+    color: #ccc;
+  }
+</style>
+</head>
+<body>
+
+<h1>🕊️ SOS Shelter Messages</h1>
+<p>Offline message board for your shelter.  
+Messages are saved locally on this device.</p>
+
+<div id="messages"></div>
+
+<textarea id="messageInput" placeholder="Write your message here..."></textarea><br />
+<button id="sendBtn">Send Message</button>
+<button id="clearBtn">Clear All</button>
+
+<footer>Built in Christ ✝️ | SOS Communication Board</footer>
+
+<script>
+  const messageBox = document.getElementById('messages');
+  const messageInput = document.getElementById('messageInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const clearBtn = document.getElementById('clearBtn');
+
+  function loadMessages() {
+    const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
+    messageBox.innerHTML = '';
+    stored.forEach(msg => addMessageToDOM(msg.text, msg.time));
+  }
+
+  function addMessageToDOM(text, time) {
+    const div = document.createElement('div');
+    div.className = 'message';
+    div.innerHTML = `<span>${text}</span><small>${time}</small>`;
+    messageBox.appendChild(div);
+  }
+
+  function saveMessage(text) {
+    const stored = JSON.parse(localStorage.getItem('sosMessages') || '[]');
+    const time = new Date().toLocaleString();
+    stored.push({ text, time });
+    localStorage.setItem('sosMessages', JSON.stringify(stored));
+    addMessageToDOM(text, time);
+  }
+
+  sendBtn.addEventListener('click', () => {
+    const text = messageInput.value.trim();
+    if (!text) return;
+    saveMessage(text);
+    messageInput.value = '';
+  });
+
+  clearBtn.addEventListener('click', () => {
+    if (confirm('Clear all local messages?')) {
+      localStorage.removeItem('sosMessages');
+      messageBox.innerHTML = '';
+    }
+  });
+
+  loadMessages();
+</script>
+</body>
+</html>
