@@ -216,5 +216,12 @@
       .then(f => (document.getElementById("footer-placeholder").innerHTML = f))
       .catch(() => console.warn("Footer could not be loaded."));
   </script>
+  <script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js")
+      .then(() => console.log("🟢 Service worker registered"))
+      .catch(err => console.warn("Service worker failed:", err));
+  }
+  </script>
 </body>
 </html>
