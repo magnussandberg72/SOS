@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>📻 SOS Radio – Sveriges Radio P1 & P4</title>
+  <title>📻 SOS Radio – Global & Faith Channels</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0b1528" />
   <link rel="icon" type="image/png" href="public/sos_favicon.png" />
@@ -31,11 +31,19 @@
       color: #a9bfff;
     }
     main {
-      padding: 30px 20px;
+      padding: 30px 20px 80px;
     }
     h1 {
       color: #ffd85c;
       margin-bottom: 10px;
+    }
+    .category {
+      margin-top: 40px;
+    }
+    .category h2 {
+      font-size: 1.4rem;
+      color: #ffd85c;
+      margin-bottom: 15px;
     }
     .station {
       background: rgba(255,255,255,0.08);
@@ -70,48 +78,28 @@
       max-width: 400px;
       border-radius: 10px;
     }
+    blockquote {
+      font-style: italic;
+      color: #b8c7ff;
+      margin-top: 30px;
+    }
   </style>
 </head>
 <body>
   <!-- 🔹 Header -->
   <header>
-    <h2>🕊️ SOS Radio – Sveriges Radio</h2>
-    <p>Faith, Family & Safety ✝️</p>
+    <h2>🕊️ SOS Radio – Faith, Family & Safety</h2>
+    <p>Live Channels from Sweden & Worldwide ✝️</p>
   </header>
 
-  <!-- 🔸 Main Content -->
+  <!-- 🔸 Main -->
   <main>
-    <h1>📡 Live Channels</h1>
+    <h1>📡 Live Radio</h1>
+    <div id="radioContainer">Loading channels...</div>
 
-    <section class="station" id="p1">
-      <h2>P1 – Samhälle & Nyheter</h2>
-      <audio id="audioP1" controls preload="none">
-        <source src="https://sverigesradio.se/topsy/direkt/srapi/132-hi.mp3" type="audio/mpeg" />
-        Din webbläsare stöder inte ljuduppspelning.
-      </audio>
-      <div class="status" id="statusP1">🔇 Stoppad</div>
-      <button onclick="playChannel('P1')">▶️ Spela P1</button>
-      <button onclick="stopChannel('P1')">⏹️ Stoppa</button>
-    </section>
-
-    <section class="station" id="p4">
-      <h2>P4 – Lokala nyheter & Musik</h2>
-      <audio id="audioP4" controls preload="none">
-        <source src="https://sverigesradio.se/topsy/direkt/srapi/163-hi.mp3" type="audio/mpeg" />
-        Din webbläsare stöder inte ljuduppspelning.
-      </audio>
-      <div class="status" id="statusP4">🔇 Stoppad</div>
-      <button onclick="playChannel('P4')">▶️ Spela P4</button>
-      <button onclick="stopChannel('P4')">⏹️ Stoppa</button>
-    </section>
-
-    <section class="station">
-      <h2>📡 Offline Mode</h2>
-      <p id="offlineMsg">Allt fungerar – du är online.</p>
-      <blockquote style="font-style:italic;color:#b8c7ff;">
-        “The light shines in the darkness, and the darkness has not overcome it.” — John 1:5
-      </blockquote>
-    </section>
+    <blockquote>
+      “The light shines in the darkness, and the darkness has not overcome it.” — John 1:5
+    </blockquote>
   </main>
 
   <!-- 🔹 Footer -->
@@ -119,46 +107,82 @@
     ✝️ Built in Christ | A Vision Framtid Initiative | © 2025 Magnus T Gustav Sandberg
   </footer>
 
-  <!-- 🔸 Radio Logic -->
+  <!-- 🔸 Dynamic Radio Script -->
   <script>
-    const p1 = document.getElementById('audioP1');
-    const p4 = document.getElementById('audioP4');
-    const s1 = document.getElementById('statusP1');
-    const s4 = document.getElementById('statusP4');
-    const offlineMsg = document.getElementById('offlineMsg');
+    const container = document.getElementById('radioContainer');
+    let currentAudio = null;
 
-    function playChannel(ch) {
-      stopAll();
-      if (ch === 'P1') { p1.play(); s1.textContent = '🔊 Spelar P1 – Sveriges Radio'; }
-      if (ch === 'P4') { p4.play(); s4.textContent = '🔊 Spelar P4 – Sveriges Radio'; }
-    }
-
-    function stopChannel(ch) {
-      if (ch === 'P1') { p1.pause(); s1.textContent = '🔇 Stoppad'; }
-      if (ch === 'P4') { p4.pause(); s4.textContent = '🔇 Stoppad'; }
-    }
-
-    function stopAll() {
-      p1.pause(); p4.pause();
-      s1.textContent = '🔇 Stoppad';
-      s4.textContent = '🔇 Stoppad';
-    }
-
-    // online/offline detection
-    function updateNetworkStatus() {
-      if (navigator.onLine) {
-        offlineMsg.textContent = "Allt fungerar – du är online.";
-      } else {
-        offlineMsg.textContent = "🔴 Ingen uppkoppling – radio avstängd.";
-        stopAll();
+    async function loadStations() {
+      try {
+        const res = await fetch('radioStations.json');
+        const data = await res.json();
+        renderStations(data.categories);
+      } catch (err) {
+        container.innerHTML = '<p>🔴 Kunde inte ladda radiokanaler (offline eller JSON saknas).</p>';
       }
     }
-    window.addEventListener('online', updateNetworkStatus);
+
+    function renderStations(categories) {
+      container.innerHTML = '';
+      categories.forEach(cat => {
+        const section = document.createElement('section');
+        section.className = 'category';
+        section.innerHTML = `<h2>${cat.icon} ${cat.name}</h2>`;
+
+        cat.stations.forEach(st => {
+          const div = document.createElement('div');
+          div.className = 'station';
+          div.innerHTML = `
+            <h3>${st.name}</h3>
+            <p style="font-size:0.9rem;color:#dbe5ff;">${st.description}</p>
+            ${st.url ? `
+              <audio id="audio-${st.id}" preload="none">
+                <source src="${st.url}" type="audio/mpeg">
+              </audio>
+              <div class="status" id="status-${st.id}">🔇 Stoppad</div>
+              <button onclick="playStation('${st.id}')">▶️ Spela</button>
+              <button onclick="stopStation('${st.id}')">⏹️ Stoppa</button>
+            ` : `<p style="color:#ffb347;">🚧 Kanal ännu inte aktiv</p>`}
+          `;
+          section.appendChild(div);
+        });
+
+        container.appendChild(section);
+      });
+    }
+
+    function playStation(id) {
+      if (currentAudio) currentAudio.pause();
+      const audio = document.getElementById('audio-' + id);
+      const status = document.getElementById('status-' + id);
+      if (audio) {
+        audio.play();
+        currentAudio = audio;
+        status.textContent = '🔊 Spelar ' + id.toUpperCase();
+      }
+    }
+
+    function stopStation(id) {
+      const audio = document.getElementById('audio-' + id);
+      const status = document.getElementById('status-' + id);
+      if (audio) {
+        audio.pause();
+        status.textContent = '🔇 Stoppad';
+      }
+    }
+
+    // Offline detektion
+    function updateNetworkStatus() {
+      if (!navigator.onLine) {
+        container.insertAdjacentHTML('afterbegin','<p style="color:#ffb347;">🔴 Offline – radioströmmar pausade.</p>');
+        if (currentAudio) currentAudio.pause();
+      }
+    }
     window.addEventListener('offline', updateNetworkStatus);
-    updateNetworkStatus();
+    loadStations();
   </script>
 
-  <!-- Service Worker registration -->
+  <!-- Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("service-worker.js")
