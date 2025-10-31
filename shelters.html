@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#0b1528" />
   <link rel="icon" type="image/png" href="public/sos_favicon.png" />
 
-  <!-- Leaflet (laddas från CDN första gången; funkar offline efter cache) -->
+  <!-- Leaflet (cachas efter 1:a online) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -79,7 +79,45 @@
 
       <div class="card">
         <h2>📋 Dina shelters</h2>
+        <div class="row" style="margin-bottom:8px">
+          <button id="btnShareQR" class="btn">📤 Dela (QR)</button>
+          <button id="btnScanQR" class="btn ghost">📷 Skanna QR</button>
+        </div>
         <div id="shelterList" class="list"></div>
+
+        <!-- QR Export panel -->
+        <div id="qrPanel" class="qrPanel" hidden>
+          <h3>🔗 QR-export</h3>
+          <div class="row">
+            <select id="qrSelect">
+              <option value="all">Alla shelters</option>
+            </select>
+            <button id="btnMakeQR" class="btn ok">🧾 Skapa QR</button>
+          </div>
+          <div id="qrBox" class="qrBox"></div>
+          <div class="row" style="justify-content:center">
+            <button id="btnCloseQR" class="btn ghost">Stäng</button>
+            <button id="btnCopyText" class="btn">📋 Kopiera text</button>
+          </div>
+          <pre id="qrText" class="qrText" hidden></pre>
+          <small class="muted">Om QR inte stöds: visa texten för mottagaren eller skicka den via valfri kanal.</small>
+        </div>
+
+        <!-- QR Import panel -->
+        <div id="scanPanel" class="scanPanel" hidden>
+          <h3>📥 QR-import</h3>
+          <video id="video" playsinline muted></video>
+          <div class="row" style="justify-content:center;margin-top:6px;">
+            <button id="btnStartScan" class="btn ok">▶️ Starta kamera</button>
+            <button id="btnStopScan" class="btn ghost">⏹️ Stoppa</button>
+            <button id="btnManual" class="btn">⌨️ Klistra in</button>
+          </div>
+          <textarea id="manualText" class="manualText" placeholder="Klistra in QR-text här…" hidden></textarea>
+          <div class="row" style="justify-content:center">
+            <button id="btnImportManual" class="btn ok" hidden>📥 Importera</button>
+          </div>
+          <div id="importPreview" class="importPreview"></div>
+        </div>
       </div>
     </section>
   </main>
@@ -102,4 +140,4 @@
     }
   </script>
 </body>
-</html>
+            </html>
