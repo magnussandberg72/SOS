@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📻 SOS Radio – Sveriges Radio P1 & P4</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0b1528" />
+  <link rel="icon" type="image/png" href="public/sos_favicon.png" />
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: radial-gradient(circle at top, #0b1528 0%, #000814 100%);
+      color: #eaf4ff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    header, footer {
+      background: linear-gradient(90deg,#0b1528,#162b4f);
+      padding: 16px;
+      color: #ffd85c;
+      border-bottom: 2px solid #ffd85c;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    footer {
+      border-top: 2px solid #ffd85c;
+      border-bottom: none;
+      font-size: 0.85rem;
+      color: #a9bfff;
+    }
+    main {
+      padding: 30px 20px;
+    }
+    h1 {
+      color: #ffd85c;
+      margin-bottom: 10px;
+    }
+    .station {
+      background: rgba(255,255,255,0.08);
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 500px;
+    }
+    button {
+      margin: 10px;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 30px;
+      background: linear-gradient(90deg,#ffd85c,#ffb347);
+      color: #001a33;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all .2s ease;
+      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+    button:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+    .status {
+      margin-top: 10px;
+      font-size: 0.95rem;
+      color: #cfe0ff;
+    }
+    audio {
+      margin-top: 10px;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 🔹 Header -->
+  <header>
+    <h2>🕊️ SOS Radio – Sveriges Radio</h2>
+    <p>Faith, Family & Safety ✝️</p>
+  </header>
+
+  <!-- 🔸 Main Content -->
+  <main>
+    <h1>📡 Live Channels</h1>
+
+    <section class="station" id="p1">
+      <h2>P1 – Samhälle & Nyheter</h2>
+      <audio id="audioP1" controls preload="none">
+        <source src="https://sverigesradio.se/topsy/direkt/srapi/132-hi.mp3" type="audio/mpeg" />
+        Din webbläsare stöder inte ljuduppspelning.
+      </audio>
+      <div class="status" id="statusP1">🔇 Stoppad</div>
+      <button onclick="playChannel('P1')">▶️ Spela P1</button>
+      <button onclick="stopChannel('P1')">⏹️ Stoppa</button>
+    </section>
+
+    <section class="station" id="p4">
+      <h2>P4 – Lokala nyheter & Musik</h2>
+      <audio id="audioP4" controls preload="none">
+        <source src="https://sverigesradio.se/topsy/direkt/srapi/163-hi.mp3" type="audio/mpeg" />
+        Din webbläsare stöder inte ljuduppspelning.
+      </audio>
+      <div class="status" id="statusP4">🔇 Stoppad</div>
+      <button onclick="playChannel('P4')">▶️ Spela P4</button>
+      <button onclick="stopChannel('P4')">⏹️ Stoppa</button>
+    </section>
+
+    <section class="station">
+      <h2>📡 Offline Mode</h2>
+      <p id="offlineMsg">Allt fungerar – du är online.</p>
+      <blockquote style="font-style:italic;color:#b8c7ff;">
+        “The light shines in the darkness, and the darkness has not overcome it.” — John 1:5
+      </blockquote>
+    </section>
+  </main>
+
+  <!-- 🔹 Footer -->
+  <footer>
+    ✝️ Built in Christ | A Vision Framtid Initiative | © 2025 Magnus T Gustav Sandberg
+  </footer>
+
+  <!-- 🔸 Radio Logic -->
+  <script>
+    const p1 = document.getElementById('audioP1');
+    const p4 = document.getElementById('audioP4');
+    const s1 = document.getElementById('statusP1');
+    const s4 = document.getElementById('statusP4');
+    const offlineMsg = document.getElementById('offlineMsg');
+
+    function playChannel(ch) {
+      stopAll();
+      if (ch === 'P1') { p1.play(); s1.textContent = '🔊 Spelar P1 – Sveriges Radio'; }
+      if (ch === 'P4') { p4.play(); s4.textContent = '🔊 Spelar P4 – Sveriges Radio'; }
+    }
+
+    function stopChannel(ch) {
+      if (ch === 'P1') { p1.pause(); s1.textContent = '🔇 Stoppad'; }
+      if (ch === 'P4') { p4.pause(); s4.textContent = '🔇 Stoppad'; }
+    }
+
+    function stopAll() {
+      p1.pause(); p4.pause();
+      s1.textContent = '🔇 Stoppad';
+      s4.textContent = '🔇 Stoppad';
+    }
+
+    // online/offline detection
+    function updateNetworkStatus() {
+      if (navigator.onLine) {
+        offlineMsg.textContent = "Allt fungerar – du är online.";
+      } else {
+        offlineMsg.textContent = "🔴 Ingen uppkoppling – radio avstängd.";
+        stopAll();
+      }
+    }
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+    updateNetworkStatus();
+  </script>
+
+  <!-- Service Worker registration -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("🟢 Service Worker registered"))
+        .catch(err => console.warn("Service Worker failed:", err));
+    }
+  </script>
+</body>
+</html>
