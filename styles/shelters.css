@@ -18,6 +18,7 @@ h1{color:#ffe57f;margin:8px 0}
 .muted{color:var(--muted);font-size:.96rem}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .chip{background:var(--panel);border:1px solid rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:.9rem}
+.chip.verse{border-color:rgba(255,216,92,.5);color:#fff5cc}
 
 .actions{display:flex;gap:10px;flex-wrap:wrap}
 .btn{
@@ -36,6 +37,14 @@ h1{color:#ffe57f;margin:8px 0}
   background:var(--panel);border-radius:14px;padding:20px;text-align:center;color:var(--muted);
   border:1px solid rgba(255,255,255,.1)
 }
+
+/* Filters */
+.filterBar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0 0}
+.fbtn{
+  padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.06);color:#fff;cursor:pointer;font-weight:700
+}
+.fbtn.active{border-color:#ffd85c;box-shadow:0 0 10px rgba(255,216,92,.3)}
 
 .grid{display:grid;gap:16px;margin-top:16px}
 @media(min-width:900px){ .grid{grid-template-columns:1fr 1fr} }
