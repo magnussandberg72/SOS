@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#0b1528" />
   <link rel="icon" type="image/png" href="public/sos_favicon.png" />
 
-  <!-- Leaflet (cachas efter 1:a online) -->
+  <!-- Leaflet (cached after first online use) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -30,35 +30,46 @@
     <section class="topbar">
       <div class="summary">
         <h1>🗺️ Shelters & Map</h1>
-        <p class="muted">Hitta, lägg till och koordinera skyddsrum. Allt lagras lokalt och fungerar offline.</p>
+        <p class="muted">Find, add and coordinate shelters. Everything is stored locally and works offline.</p>
         <div class="chips">
           <span id="chipTotal" class="chip">0 shelters</span>
           <span id="chipUpdated" class="chip">Updated: —</span>
           <span id="chipNet" class="chip">🔴 Offline</span>
+          <span id="chipVerse" class="chip verse" hidden>—</span>
         </div>
       </div>
       <div class="actions">
-        <button id="btnMyPos" class="btn ghost">📍 Min plats</button>
-        <button id="btnClearAll" class="btn danger">🧹 Rensa lokalt</button>
+        <button id="btnMyPos" class="btn ghost">📍 My position</button>
+        <button id="btnFaith" class="btn ghost">✝️ Faith mode: OFF</button>
+        <button id="btnClearAll" class="btn danger">🧹 Clear local</button>
       </div>
     </section>
 
     <section class="mapBox">
       <div id="map" class="map"></div>
       <div id="mapFallback" class="mapFallback" hidden>
-        <p>🌌 Kartan kunde inte laddas (ingen Leaflet eller offline första gången).<br/>Listan nedan fungerar ändå. När du varit online en gång cachas kartan.</p>
+        <p>🌌 Map failed to load (Leaflet missing or first-time offline).<br/>List functions still work. Once you’ve been online, the map is cached.</p>
       </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="filterBar">
+      <button class="fbtn active" data-filter="all">🔄 All</button>
+      <button class="fbtn" data-filter="open">🟢 Open</button>
+      <button class="fbtn" data-filter="full">🟠 Full</button>
+      <button class="fbtn" data-filter="damaged">🔴 Damaged</button>
+      <button class="fbtn" data-filter="unknown">⚪ Unknown</button>
     </section>
 
     <section class="panel grid">
       <div class="card">
-        <h2>➕ Lägg till shelter</h2>
+        <h2>➕ Add shelter</h2>
         <div class="row">
-          <input id="sName" placeholder="Namn (t.ex. Kalix Kyrka)"/>
+          <input id="sName" placeholder="Name (e.g., Kalix Church)"/>
         </div>
         <div class="row">
-          <input id="sLat" placeholder="Latitud (t.ex. 65.85300)" inputmode="decimal" />
-          <input id="sLon" placeholder="Longitud (t.ex. 23.15600)" inputmode="decimal" />
+          <input id="sLat" placeholder="Latitude (e.g., 65.85300)" inputmode="decimal" />
+          <input id="sLon" placeholder="Longitude (e.g., 23.15600)" inputmode="decimal" />
         </div>
         <div class="row">
           <select id="sStatus">
@@ -67,54 +78,54 @@
             <option value="damaged">🔴 Damaged</option>
             <option value="unknown">⚪ Unknown</option>
           </select>
-          <input id="sCapacity" placeholder="Kapacitet (valfritt)" inputmode="numeric" />
+          <input id="sCapacity" placeholder="Capacity (optional)" inputmode="numeric" />
         </div>
-        <textarea id="sNotes" placeholder="Anteckningar (t.ex. generator, vatten, medicin)…"></textarea>
+        <textarea id="sNotes" placeholder="Notes (e.g., generator, water, medicine)…"></textarea>
         <div class="row">
-          <button id="btnAdd" class="btn ok">💾 Spara</button>
-          <button id="btnGPSFill" class="btn ghost">📍 Fyll med GPS</button>
+          <button id="btnAdd" class="btn ok">💾 Save</button>
+          <button id="btnGPSFill" class="btn ghost">📍 Fill from GPS</button>
         </div>
-        <small class="muted">Koordinater krävs. Använd “Fyll med GPS” om möjligt.</small>
+        <small class="muted">Coordinates required. Use “Fill from GPS” when possible.</small>
       </div>
 
       <div class="card">
-        <h2>📋 Dina shelters</h2>
+        <h2>📋 Your shelters</h2>
         <div class="row" style="margin-bottom:8px">
-          <button id="btnShareQR" class="btn">📤 Dela (QR)</button>
-          <button id="btnScanQR" class="btn ghost">📷 Skanna QR</button>
+          <button id="btnShareQR" class="btn">📤 Share (QR)</button>
+          <button id="btnScanQR" class="btn ghost">📷 Scan QR</button>
         </div>
         <div id="shelterList" class="list"></div>
 
-        <!-- QR Export panel -->
+        <!-- QR Export -->
         <div id="qrPanel" class="qrPanel" hidden>
-          <h3>🔗 QR-export</h3>
+          <h3>🔗 QR Export</h3>
           <div class="row">
             <select id="qrSelect">
-              <option value="all">Alla shelters</option>
+              <option value="all">All shelters</option>
             </select>
-            <button id="btnMakeQR" class="btn ok">🧾 Skapa QR</button>
+            <button id="btnMakeQR" class="btn ok">🧾 Make QR</button>
           </div>
           <div id="qrBox" class="qrBox"></div>
           <div class="row" style="justify-content:center">
-            <button id="btnCloseQR" class="btn ghost">Stäng</button>
-            <button id="btnCopyText" class="btn">📋 Kopiera text</button>
+            <button id="btnCloseQR" class="btn ghost">Close</button>
+            <button id="btnCopyText" class="btn">📋 Copy text</button>
           </div>
           <pre id="qrText" class="qrText" hidden></pre>
-          <small class="muted">Om QR inte stöds: visa texten för mottagaren eller skicka den via valfri kanal.</small>
+          <small class="muted">If QR isn’t supported: show/copy this text to the recipient.</small>
         </div>
 
-        <!-- QR Import panel -->
+        <!-- QR Import -->
         <div id="scanPanel" class="scanPanel" hidden>
-          <h3>📥 QR-import</h3>
+          <h3>📥 QR Import</h3>
           <video id="video" playsinline muted></video>
           <div class="row" style="justify-content:center;margin-top:6px;">
-            <button id="btnStartScan" class="btn ok">▶️ Starta kamera</button>
-            <button id="btnStopScan" class="btn ghost">⏹️ Stoppa</button>
-            <button id="btnManual" class="btn">⌨️ Klistra in</button>
+            <button id="btnStartScan" class="btn ok">▶️ Start camera</button>
+            <button id="btnStopScan" class="btn ghost">⏹️ Stop</button>
+            <button id="btnManual" class="btn">⌨️ Paste text</button>
           </div>
-          <textarea id="manualText" class="manualText" placeholder="Klistra in QR-text här…" hidden></textarea>
+          <textarea id="manualText" class="manualText" placeholder="Paste QR text here…" hidden></textarea>
           <div class="row" style="justify-content:center">
-            <button id="btnImportManual" class="btn ok" hidden>📥 Importera</button>
+            <button id="btnImportManual" class="btn ok" hidden>📥 Import</button>
           </div>
           <div id="importPreview" class="importPreview"></div>
         </div>
@@ -140,4 +151,4 @@
     }
   </script>
 </body>
-            </html>
+</html>
