@@ -10,7 +10,10 @@ const FILES_TO_CACHE = [
   "public/sos_favicon.png",
   "styles/main.css",
   "styles/header.css",
-  "styles/footer.css"
+  "styles/footer.css",
+  "shelters.html",
+"styles/shelters.css",
+"scripts/shelters.js"
 ];
 
 // Installera & cachea alla filer
