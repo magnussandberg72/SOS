@@ -68,3 +68,19 @@ textarea{min-height:84px;resize:vertical}
 .btn.sm{padding:8px 12px;font-size:.9rem}
 
 .leaflet-container{background:#071022}
+
+/* QR/Scan panels */
+.qrPanel,.scanPanel{
+  margin-top:14px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;padding:12px
+}
+.qrBox{margin:10px 0;text-align:center}
+.qrBox canvas{width:260px;height:260px;border-radius:10px;box-shadow:0 0 10px rgba(255,255,255,.25)}
+.qrText{
+  background:rgba(255,255,255,.06);color:#dfe7ff;padding:10px;border-radius:10px;overflow:auto;white-space:pre-wrap
+}
+.scanPanel video{
+  width:100%;max-width:520px;border-radius:12px;background:#000;box-shadow:0 0 10px rgba(0,0,0,.5);margin:8px auto
+}
+.manualText{width:100%;min-height:120px;margin-top:8px;border-radius:10px;background:rgba(255,255,255,.07);color:#fff}
+.importPreview{margin-top:8px;color:#cfe0ff;font-size:.92rem}
