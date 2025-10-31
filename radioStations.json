@@ -1,0 +1,87 @@
+{
+  "version": "1.0",
+  "updated": "2025-10-30",
+  "categories": [
+    {
+      "name": "Sweden",
+      "icon": "🇸🇪",
+      "stations": [
+        {
+          "id": "p1",
+          "name": "Sveriges Radio P1",
+          "description": "Samhälle, nyheter, kultur och tro – Sveriges viktigaste kanal vid kris.",
+          "url": "https://sverigesradio.se/topsy/direkt/srapi/132-hi.mp3",
+          "language": "Swedish",
+          "type": "Public Service",
+          "region": "National"
+        },
+        {
+          "id": "p4",
+          "name": "Sveriges Radio P4",
+          "description": "Lokala nyheter, väder och trafikinformation från hela landet.",
+          "url": "https://sverigesradio.se/topsy/direkt/srapi/163-hi.mp3",
+          "language": "Swedish",
+          "type": "Public Service",
+          "region": "Local"
+        }
+      ]
+    },
+    {
+      "name": "World News",
+      "icon": "🌍",
+      "stations": [
+        {
+          "id": "bbc",
+          "name": "BBC World Service",
+          "description": "Global nyhetsradio från Storbritannien.",
+          "url": "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
+          "language": "English",
+          "type": "News",
+          "region": "Global"
+        },
+        {
+          "id": "dw",
+          "name": "Deutsche Welle News",
+          "description": "Tyska världsradion med nyheter och analyser.",
+          "url": "https://dw.audiostream.io/dwenglish",
+          "language": "English",
+          "type": "News",
+          "region": "Global"
+        },
+        {
+          "id": "voa",
+          "name": "Voice of America Africa",
+          "description": "Nyheter och samhällsprogram från Voice of America.",
+          "url": "https://voa-21.akacast.akamaistream.net/7/21/437844/v1/ibb.akacast.akamaistream.net/voa-21",
+          "language": "English",
+          "type": "News",
+          "region": "Africa"
+        }
+      ]
+    },
+    {
+      "name": "Faith & Hope",
+      "icon": "✝️",
+      "stations": [
+        {
+          "id": "faithradio",
+          "name": "Faith Radio International",
+          "description": "Kristen radio med budskap om tro, kärlek och hopp.",
+          "url": "https://stream.faithradio.org:8443/faithradio.mp3",
+          "language": "English",
+          "type": "Faith",
+          "region": "Global"
+        },
+        {
+          "id": "crisisnet",
+          "name": "Crisis Response Network",
+          "description": "Internationell nätverkssändning vid humanitära kriser (planerad).",
+          "url": "",
+          "language": "Multilingual",
+          "type": "Rescue",
+          "region": "Global"
+        }
+      ]
+    }
+  ]
+}
