@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🛡️ SOS – Shelters & Map</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0b1528" />
+  <link rel="icon" type="image/png" href="public/sos_favicon.png" />
+
+  <!-- Leaflet (laddas från CDN första gången; funkar offline efter cache) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+
+  <!-- Shelters CSS -->
+  <link rel="stylesheet" href="styles/shelters.css" />
+</head>
+<body>
+  <!-- Header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch("includes/header.html").then(r=>r.text()).then(h=>{document.getElementById("header-placeholder").innerHTML=h});
+  </script>
+
+  <main class="wrap">
+    <section class="topbar">
+      <div class="summary">
+        <h1>🗺️ Shelters & Map</h1>
+        <p class="muted">Hitta, lägg till och koordinera skyddsrum. Allt lagras lokalt och fungerar offline.</p>
+        <div class="chips">
+          <span id="chipTotal" class="chip">0 shelters</span>
+          <span id="chipUpdated" class="chip">Updated: —</span>
+          <span id="chipNet" class="chip">🔴 Offline</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="btnMyPos" class="btn ghost">📍 Min plats</button>
+        <button id="btnClearAll" class="btn danger">🧹 Rensa lokalt</button>
+      </div>
+    </section>
+
+    <section class="mapBox">
+      <div id="map" class="map"></div>
+      <div id="mapFallback" class="mapFallback" hidden>
+        <p>🌌 Kartan kunde inte laddas (ingen Leaflet eller offline första gången).<br/>Listan nedan fungerar ändå. När du varit online en gång cachas kartan.</p>
+      </div>
+    </section>
+
+    <section class="panel grid">
+      <div class="card">
+        <h2>➕ Lägg till shelter</h2>
+        <div class="row">
+          <input id="sName" placeholder="Namn (t.ex. Kalix Kyrka)"/>
+        </div>
+        <div class="row">
+          <input id="sLat" placeholder="Latitud (t.ex. 65.85300)" inputmode="decimal" />
+          <input id="sLon" placeholder="Longitud (t.ex. 23.15600)" inputmode="decimal" />
+        </div>
+        <div class="row">
+          <select id="sStatus">
+            <option value="open">🟢 Open</option>
+            <option value="full">🟠 Full</option>
+            <option value="damaged">🔴 Damaged</option>
+            <option value="unknown">⚪ Unknown</option>
+          </select>
+          <input id="sCapacity" placeholder="Kapacitet (valfritt)" inputmode="numeric" />
+        </div>
+        <textarea id="sNotes" placeholder="Anteckningar (t.ex. generator, vatten, medicin)…"></textarea>
+        <div class="row">
+          <button id="btnAdd" class="btn ok">💾 Spara</button>
+          <button id="btnGPSFill" class="btn ghost">📍 Fyll med GPS</button>
+        </div>
+        <small class="muted">Koordinater krävs. Använd “Fyll med GPS” om möjligt.</small>
+      </div>
+
+      <div class="card">
+        <h2>📋 Dina shelters</h2>
+        <div id="shelterList" class="list"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch("includes/footer.html").then(r=>r.text()).then(f=>{document.getElementById("footer-placeholder").innerHTML=f});
+  </script>
+
+  <!-- Shelters JS -->
+  <script src="scripts/shelters.js"></script>
+
+  <!-- Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(()=>console.log("🟢 SW registered for shelters"))
+        .catch(err=>console.warn("SW failed:", err));
+    }
+  </script>
+</body>
+</html>
