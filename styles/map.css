@@ -1,0 +1,66 @@
+:root{
+  --bg:#0b0f1a;
+  --panel:rgba(255,255,255,0.07);
+  --ink:#f5f7ff;
+  --accent:#ffd85c;
+  --danger:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);}
+.wrap{max-width:980px;margin:0 auto;padding:20px;}
+h1,h2{color:var(--accent);margin:.2rem 0 .5rem}
+p,label,small{color:#dbe5ff}
+.muted{color:#a9b3c7}
+.title{margin-bottom:12px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.banner{
+  margin-top:10px;padding:10px 14px;border-radius:10px;
+  background:rgba(255,85,85,0.18);border:1px solid rgba(255,85,85,0.45);
+  color:#ffdede;font-weight:700;text-align:center;box-shadow:0 0 10px rgba(255,85,85,0.15);
+}
+.hidden{display:none}
+.card{background:var(--panel);padding:16px;border-radius:12px;box-shadow:0 0 8px rgba(255,255,255,.08);margin-top:16px}
+
+input{
+  width:100%;padding:10px;border:none;border-radius:10px;background:rgba(255,255,255,0.1);color:#fff;
+}
+.btn{padding:10px 16px;border:none;border-radius:24px;background:linear-gradient(90deg,#ffd85c,#ffb347);color:#000;font-weight:700;cursor:pointer}
+.btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.3)}
+.btn.small{padding:6px 10px;border-radius:16px}
+.btn.danger{border-color:rgba(255,107,107,.6);color:#ffdcdc}
+
+.filebtn{
+  display:inline-block;border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:8px 12px;cursor:pointer;
+}
+.filebtn input{display:none}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.pair{display:flex;gap:8px}
+.smallrow{display:flex;gap:8px;margin-top:8px}
+
+.chip{display:inline-block;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.25)}
+.chip.offline{background:#ff5555;color:#220000}
+.chip.online{background:#33cc66;color:#001a00}
+
+/* Map */
+#mapWrap{position:relative; width:100%; aspect-ratio:16/9; background:#0a1222; border-radius:12px; overflow:hidden}
+#map{position:relative; width:100%; height:100%; cursor:grab; outline:none}
+#map.dragging{cursor:grabbing}
+.tile{position:absolute; width:256px; height:256px; image-rendering: crisp-edges; image-rendering: pixelated;}
+
+/* HUD */
+.hud{position:absolute; top:8px; right:8px; display:flex; flex-direction:column; gap:8px; align-items:flex-end}
+.hud .pad{display:flex; flex-direction:column; gap:4px; background:rgba(0,0,0,.35); padding:6px; border-radius:10px}
+.hud .pad button{background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:4px 8px;cursor:pointer}
+.hud .pad .mid{display:flex; gap:4px; justify-content:center}
+
+/* Marker list */
+.list .row{display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:8px; align-items:center; background:rgba(255,255,255,.05); padding:8px; border-radius:8px; margin-bottom:6px}
+.tag{display:inline-block;padding:4px 8px;border-radius:8px;font-size:.8rem;background:#2e7d32;color:#eaffea}
+.tag.mine{background:#ffd85c;color:#220}
+.del{background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer}
+.del:hover{border-color:#ff7777}
+
+/* Marker dots */
+.dot{position:absolute; width:12px; height:12px; background:#ffb347; border:2px solid #000; border-radius:50%; transform:translate(-50%,-50%); box-shadow:0 0 6px rgba(255,255,255,.4)}
+.dot.mine{background:#ffd85c}
