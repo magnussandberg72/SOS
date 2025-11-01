@@ -28,7 +28,10 @@ const FILES_TO_CACHE = [
 
   // images/icons
   "public/sos_logo.png",
-  "public/sos_favicon.png"
+  "public/sos_favicon.png",
+  "message.html",
+"styles/message.css",
+"scripts/message.js"
 ];
 
 // Hjälpare: trim tile-cache efter gräns
