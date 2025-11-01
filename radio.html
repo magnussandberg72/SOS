@@ -1,194 +1,54 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>📻 SOS Radio – Global & Faith Channels</title>
+  <title>📻 SOS Radio</title>
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#0b1528" />
-  <link rel="icon" type="image/png" href="public/sos_favicon.png" />
-
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: radial-gradient(circle at top, #0b1528 0%, #000814 100%);
-      color: #eaf4ff;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
-    header, footer {
-      background: linear-gradient(90deg,#0b1528,#162b4f);
-      padding: 16px;
-      color: #ffd85c;
-      border-bottom: 2px solid #ffd85c;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    }
-    footer {
-      border-top: 2px solid #ffd85c;
-      border-bottom: none;
-      font-size: 0.85rem;
-      color: #a9bfff;
-    }
-    main {
-      padding: 30px 20px 80px;
-    }
-    h1 {
-      color: #ffd85c;
-      margin-bottom: 10px;
-    }
-    .category {
-      margin-top: 40px;
-    }
-    .category h2 {
-      font-size: 1.4rem;
-      color: #ffd85c;
-      margin-bottom: 15px;
-    }
-    .station {
-      background: rgba(255,255,255,0.08);
-      border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-      margin: 20px auto;
-      padding: 20px;
-      max-width: 500px;
-    }
-    button {
-      margin: 10px;
-      padding: 12px 30px;
-      border: none;
-      border-radius: 30px;
-      background: linear-gradient(90deg,#ffd85c,#ffb347);
-      color: #001a33;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all .2s ease;
-      box-shadow: 0 0 10px rgba(255,255,255,0.2);
-    }
-    button:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,0.4); }
-    .status {
-      margin-top: 10px;
-      font-size: 0.95rem;
-      color: #cfe0ff;
-    }
-    audio {
-      margin-top: 10px;
-      width: 90%;
-      max-width: 400px;
-      border-radius: 10px;
-    }
-    blockquote {
-      font-style: italic;
-      color: #b8c7ff;
-      margin-top: 30px;
-    }
-  </style>
+  <link rel="icon" href="public/sos_favicon.png" type="image/png" />
+  <link rel="stylesheet" href="styles/radio.css" />
 </head>
 <body>
-  <!-- 🔹 Header -->
-  <header>
-    <h2>🕊️ SOS Radio – Faith, Family & Safety</h2>
-    <p>Live Channels from Sweden & Worldwide ✝️</p>
-  </header>
+  <div id="header-placeholder"></div>
+  <script>
+    fetch("includes/header.html")
+      .then(r => r.text())
+      .then(h => (document.getElementById("header-placeholder").innerHTML = h));
+  </script>
 
-  <!-- 🔸 Main -->
-  <main>
-    <h1>📡 Live Radio</h1>
-    <div id="radioContainer">Loading channels...</div>
+  <main class="wrap">
+    <section class="top">
+      <h1>📻 SOS Radio</h1>
+      <p>Emergency information and calm in the storm.</p>
+      <div id="status" class="status offline">Offline</div>
+    </section>
 
-    <blockquote>
-      “The light shines in the darkness, and the darkness has not overcome it.” — John 1:5
-    </blockquote>
+    <section class="channels">
+      <button class="btn" data-src="https://sverigesradio.se/topsy/direkt/srapi/132.aac.m3u">P1 – Sveriges Radio</button>
+      <button class="btn" data-src="https://sverigesradio.se/topsy/direkt/srapi/163.aac.m3u">P4 Norrbotten</button>
+      <button class="btn" data-src="https://sverigesradio.se/topsy/direkt/srapi/212.aac.m3u">P4 Extra</button>
+    </section>
+
+    <section class="player">
+      <audio id="radioPlayer" controls preload="none"></audio>
+      <p id="nowPlaying">No stream selected.</p>
+    </section>
+
+    <section class="alerts">
+      <h2>⚠️ Emergency Updates</h2>
+      <div id="alertsBox" class="alerts-box">
+        <p>No alerts available (offline).</p>
+      </div>
+    </section>
   </main>
 
-  <!-- 🔹 Footer -->
-  <footer>
-    ✝️ Built in Christ | A Vision Framtid Initiative | © 2025 Magnus T Gustav Sandberg
-  </footer>
-
-  <!-- 🔸 Dynamic Radio Script -->
+  <div id="footer-placeholder"></div>
   <script>
-    const container = document.getElementById('radioContainer');
-    let currentAudio = null;
-
-    async function loadStations() {
-      try {
-        const res = await fetch('radioStations.json');
-        const data = await res.json();
-        renderStations(data.categories);
-      } catch (err) {
-        container.innerHTML = '<p>🔴 Kunde inte ladda radiokanaler (offline eller JSON saknas).</p>';
-      }
-    }
-
-    function renderStations(categories) {
-      container.innerHTML = '';
-      categories.forEach(cat => {
-        const section = document.createElement('section');
-        section.className = 'category';
-        section.innerHTML = `<h2>${cat.icon} ${cat.name}</h2>`;
-
-        cat.stations.forEach(st => {
-          const div = document.createElement('div');
-          div.className = 'station';
-          div.innerHTML = `
-            <h3>${st.name}</h3>
-            <p style="font-size:0.9rem;color:#dbe5ff;">${st.description}</p>
-            ${st.url ? `
-              <audio id="audio-${st.id}" preload="none">
-                <source src="${st.url}" type="audio/mpeg">
-              </audio>
-              <div class="status" id="status-${st.id}">🔇 Stoppad</div>
-              <button onclick="playStation('${st.id}')">▶️ Spela</button>
-              <button onclick="stopStation('${st.id}')">⏹️ Stoppa</button>
-            ` : `<p style="color:#ffb347;">🚧 Kanal ännu inte aktiv</p>`}
-          `;
-          section.appendChild(div);
-        });
-
-        container.appendChild(section);
-      });
-    }
-
-    function playStation(id) {
-      if (currentAudio) currentAudio.pause();
-      const audio = document.getElementById('audio-' + id);
-      const status = document.getElementById('status-' + id);
-      if (audio) {
-        audio.play();
-        currentAudio = audio;
-        status.textContent = '🔊 Spelar ' + id.toUpperCase();
-      }
-    }
-
-    function stopStation(id) {
-      const audio = document.getElementById('audio-' + id);
-      const status = document.getElementById('status-' + id);
-      if (audio) {
-        audio.pause();
-        status.textContent = '🔇 Stoppad';
-      }
-    }
-
-    // Offline detektion
-    function updateNetworkStatus() {
-      if (!navigator.onLine) {
-        container.insertAdjacentHTML('afterbegin','<p style="color:#ffb347;">🔴 Offline – radioströmmar pausade.</p>');
-        if (currentAudio) currentAudio.pause();
-      }
-    }
-    window.addEventListener('offline', updateNetworkStatus);
-    loadStations();
+    fetch("includes/footer.html")
+      .then(r => r.text())
+      .then(f => (document.getElementById("footer-placeholder").innerHTML = f));
   </script>
 
-  <!-- Service Worker -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("service-worker.js")
-        .then(() => console.log("🟢 Service Worker registered"))
-        .catch(err => console.warn("Service Worker failed:", err));
-    }
-  </script>
+  <script src="scripts/radio.js"></script>
 </body>
 </html>
