@@ -24,3 +24,16 @@ input{width:100%;margin:4px 0 10px;padding:8px;border:none;border-radius:8px;bac
 .msgList{max-height:200px;overflow:auto;font-size:.9rem;background:rgba(255,255,255,.05);border-radius:8px;padding:8px}
 .msg{border-bottom:1px solid rgba(255,255,255,.1);padding:4px 0}
 .msg:last-child{border-bottom:none}
+/* Offline banner */
+.banner{
+  margin-top:10px;
+  padding:10px 14px;
+  border-radius:10px;
+  background:rgba(255,85,85,0.18);
+  border:1px solid rgba(255,85,85,0.45);
+  color:#ffdede;
+  font-weight:700;
+  text-align:center;
+  box-shadow:0 0 10px rgba(255,85,85,0.15);
+}
+.hidden{ display:none; }
