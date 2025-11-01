@@ -1,0 +1,32 @@
+:root{
+  --bg:#110000;
+  --panel:rgba(255,255,255,0.06);
+  --ink:#f5f7ff;
+  --accent:#ff8a8a;
+  --gold:#ffd85c;
+}
+body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);}
+.wrap{max-width:1100px;margin:0 auto;padding:20px}
+.topbar{text-align:center;margin-bottom:20px}
+h1{color:var(--accent);margin-bottom:6px}
+.muted{color:#ccc;font-size:.95rem}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+.chip{background:var(--panel);padding:6px 10px;border-radius:999px;font-size:.9rem;border:1px solid rgba(255,255,255,0.15)}
+.grid{display:grid;gap:16px}
+@media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+.card{background:var(--panel);padding:16px;border-radius:12px;box-shadow:0 0 10px rgba(255,0,0,0.25)}
+.card h2{margin-top:0;color:var(--gold)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1}
+.btn{padding:10px 16px;border:none;border-radius:24px;cursor:pointer;font-weight:700;
+     background:linear-gradient(90deg,var(--gold),var(--accent));color:#200;
+     box-shadow:0 0 8px rgba(255,255,255,0.2)}
+.btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.3)}
+.btn.ok{background:linear-gradient(90deg,#6cff6c,#2fff2f);color:#002200}
+input,select,textarea{width:100%;padding:10px;border:none;border-radius:10px;
+                      background:rgba(255,255,255,0.1);color:#fff}
+textarea{min-height:70px;resize:vertical}
+.qrBox{text-align:center;margin-top:10px}
+.relayBox{margin-top:10px;font-size:.9rem;color:#ddd}
+.console{grid-column:1/-1}
+.log{background:rgba(0,0,0,0.4);border-radius:10px;padding:10px;max-height:250px;overflow:auto;font-family:monospace;font-size:.9rem}
