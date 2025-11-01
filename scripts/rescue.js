@@ -1,32 +1,34 @@
-// ==================================
-// 🆘 SOS – Rescue Mode v2.2
-// Offline QR Relay + Merge & Dedup
-// ==================================
+// =====================================
+// 🆘 SOS – Rescue Mode (v2.3 simplified)
+// =====================================
 
+// Snabbt alias
 const $ = (id) => document.getElementById(id);
-const log = (msg) => {
-  const l = $("log");
-  const p = document.createElement("div");
-  p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-  l.prepend(p);
-};
 
-// === QR loader ===
+// Logg till konsolen i appen
+function log(msg) {
+  const box = $("log");
+  const line = document.createElement("div");
+  line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  box.prepend(line);
+}
+
+// === Ladda in QR-funktioner ===
 (async () => {
   if (!window.makeQRCanvas) {
     await import("./qrcore.js");
-    log("QR core loaded.");
+    log("QR system loaded.");
   }
 })();
 
-// === Room handling ===
-function randomId() {
-  return "room_" + Math.random().toString(36).slice(2, 8);
-}
-function randomKey() {
-  return crypto
-    .getRandomValues(new Uint8Array(16))
-    .reduce((a, b) => a + ("0" + b.toString(16)).slice(-2), "");
+// === Rums-system (ID & nyckel) ===
+function newRoom() {
+  return {
+    id: "room_" + Math.random().toString(36).slice(2, 8),
+    key: crypto
+      .getRandomValues(new Uint8Array(16))
+      .reduce((a, b) => a + ("0" + b.toString(16)).slice(-2), ""),
+  };
 }
 function saveRoom(r) {
   localStorage.setItem("rescueRoom", JSON.stringify(r));
@@ -35,16 +37,13 @@ function loadRoom() {
   return JSON.parse(localStorage.getItem("rescueRoom") || "null");
 }
 
-let room = loadRoom();
-if (!room) {
-  room = { id: randomId(), key: randomKey() };
-  saveRoom(room);
-}
+let room = loadRoom() || newRoom();
+saveRoom(room);
 $("roomId").value = room.id;
 $("roomKey").value = room.key;
 $("chipRoom").textContent = "Room: " + room.id;
 
-// === Faith mode ===
+// === Faith-läge ===
 let faith = false;
 $("chipFaith").onclick = () => {
   faith = !faith;
@@ -52,7 +51,7 @@ $("chipFaith").onclick = () => {
   log("Faith mode " + (faith ? "enabled" : "disabled"));
 };
 
-// === Local DB for shelters ===
+// === Shelter-databas ===
 function loadDB() {
   return JSON.parse(localStorage.getItem("rescueDB") || "{}");
 }
@@ -61,213 +60,126 @@ function saveDB(db) {
 }
 let DB = loadDB();
 
-// === Compose + Queue ===
-let relayed = 0;
+// === Visa shelters på skärmen ===
+function renderShelters() {
+  const box = $("shelterList");
+  box.innerHTML = "";
+  const ids = Object.keys(DB);
+  if (ids.length === 0) {
+    box.innerHTML = "<p style='color:#ccc;'>No shelters saved yet.</p>";
+    return;
+  }
+  ids.forEach((id) => {
+    const s = DB[id];
+    const card = document.createElement("div");
+    card.className = "shelter-item";
+    const statusClass = "status-" + (s.status || "unknown");
+    card.innerHTML = `
+      <div class="shelter-head">
+        <div>${id}</div>
+        <div class="shelter-status ${statusClass}">${s.status}</div>
+      </div>
+      <div class="shelter-body">
+        <span>👥 ${s.people}</span>
+        <span>🩹 ${s.injured}</span>
+        <span>⏱ ${new Date(s.ts).toLocaleTimeString()}</span>
+        <div>📝 ${s.note || ""}</div>
+      </div>`;
+    box.appendChild(card);
+  });
+}
+
+// === Lägga till shelter ===
 $("btnQueue").onclick = () => {
-  const item = {
+  const s = {
     shelterId: $("cShelter").value || "unknown",
     people: Number($("cPeople").value || 0),
     injured: Number($("cInjured").value || 0),
     needs: ($("cNeeds").value || "")
       .split(",")
-      .map((s) => s.trim())
+      .map((v) => v.trim())
       .filter(Boolean),
     note: $("cNote").value,
     status: $("cStatus").value,
     ts: new Date().toISOString(),
   };
 
-  // merge immediately into DB
-  const prev = DB[item.shelterId];
-  if (!prev || new Date(item.ts) > new Date(prev.ts)) {
-    DB[item.shelterId] = item;
+  const old = DB[s.shelterId];
+  if (!old || new Date(s.ts) > new Date(old.ts)) {
+    DB[s.shelterId] = s;
     saveDB(DB);
-    log(`Stored/updated shelter ${item.shelterId}`);
+    renderShelters();
+    log("Shelter saved: " + s.shelterId);
+  } else {
+    log("Older data ignored for " + s.shelterId);
   }
 
-  $("relayBox").textContent = JSON.stringify(item, null, 2);
+  $("relayBox").textContent = JSON.stringify(s, null, 2);
 };
 
-// === QR Relay (export current DB) ===
+// === QR export ===
 $("btnQRRelay").onclick = async () => {
   const payload = JSON.stringify(DB);
   await makeQRCanvas(payload, "qrRoomBox");
   $("qrRoomBox").hidden = false;
-  relayed++;
-  log(`QR bundle (${Object.keys(DB).length} records) displayed.`);
+  log("QR with " + Object.keys(DB).length + " shelters ready.");
 };
 
-// === QR Scan (import & merge) ===
+// === QR import ===
 $("btnScanQR").onclick = () => {
-  log("Opening camera for QR scan...");
+  log("Scanning QR...");
   scanQRFromCamera((data) => {
     let incoming = {};
     try {
       incoming = JSON.parse(data);
     } catch {
-      log("Received non-JSON data.");
+      log("Invalid QR data.");
       return;
     }
+
     let updated = 0;
-    for (const [id, val] of Object.entries(incoming)) {
-      const prev = DB[id];
-      if (!prev || new Date(val.ts) > new Date(prev.ts)) {
-        DB[id] = val;
+    for (const [id, s] of Object.entries(incoming)) {
+      const old = DB[id];
+      if (!old || new Date(s.ts) > new Date(old.ts)) {
+        DB[id] = s;
         updated++;
       }
     }
+
     if (updated > 0) {
       saveDB(DB);
-      log(`Merged ${updated} new/updated shelters from QR.`);
+      renderShelters();
+      log(`Merged ${updated} updated shelters.`);
     } else {
-      log("No new data found in bundle.");
+      log("No new data found.");
     }
   });
 };
 
-// === Other buttons ===
+// === Övriga knappar ===
 $("btnNewRoom").onclick = () => {
-  room = { id: randomId(), key: randomKey() };
+  room = newRoom();
   saveRoom(room);
   $("roomId").value = room.id;
   $("roomKey").value = room.key;
   $("chipRoom").textContent = "Room: " + room.id;
-  log("New room generated.");
+  log("New room created.");
 };
 $("btnCopyKey").onclick = () => {
   navigator.clipboard?.writeText(room.key);
   log("Key copied to clipboard.");
 };
-$("btnAudio").onclick = () => log("Audio layer not yet active.");
-$("btnBLE").onclick = () => log("Bluetooth layer not yet active.");
+$("btnAudio").onclick = () => log("Audio mode not ready.");
+$("btnBLE").onclick = () => log("Bluetooth mode not ready.");
 
-// === Diagnostics chips ===
-function updateChips() {
-  $("chipNodes").textContent = "Nodes: " + Math.floor(Math.random() * 3);
-  $("chipRelayed").textContent = "Relayed: " + relayed;
-}
-setInterval(updateChips, 5000);// ==========================
-// 🆘 SOS – Rescue Mode v2.1
-// Offline QR Relay prototype
-// ==========================
-
-const $ = id => document.getElementById(id);
-const log = msg => {
-  const l = $("log");
-  const p = document.createElement("div");
-  p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-  l.prepend(p);
-};
-
-// === QR core loader ===
-(async () => {
-  if (!window.makeQRCanvas) {
-    await import("./qrcore.js");
-    log("QR core loaded.");
-  }
-})();
-
-// ==== Room handling ====
-function randomId() {
-  return "room_" + Math.random().toString(36).slice(2, 8);
-}
-function randomKey() {
-  return crypto
-    .getRandomValues(new Uint8Array(16))
-    .reduce((a, b) => a + ("0" + b.toString(16)).slice(-2), "");
-}
-function saveRoom(r) {
-  localStorage.setItem("rescueRoom", JSON.stringify(r));
-}
-function loadRoom() {
-  return JSON.parse(localStorage.getItem("rescueRoom") || "null");
-}
-
-let room = loadRoom();
-if (!room) {
-  room = { id: randomId(), key: randomKey() };
-  saveRoom(room);
-}
-
-$("roomId").value = room.id;
-$("roomKey").value = room.key;
-$("chipRoom").textContent = "Room: " + room.id;
-
-// ==== Faith mode chip ====
-let faith = false;
-$("chipFaith").onclick = () => {
-  faith = !faith;
-  $("chipFaith").textContent = faith ? "✝️ Faith ON" : "✝️ Faith OFF";
-  log("Faith mode " + (faith ? "enabled" : "disabled"));
-};
-
-// ==== Room actions ====
-$("btnNewRoom").onclick = () => {
-  room = { id: randomId(), key: randomKey() };
-  saveRoom(room);
-  $("roomId").value = room.id;
-  $("roomKey").value = room.key;
-  $("chipRoom").textContent = "Room: " + room.id;
-  log("New room generated.");
-};
-
-$("btnCopyKey").onclick = () => {
-  navigator.clipboard?.writeText(room.key);
-  log("Key copied.");
-};
-
-// ==== Queue & compose ====
+// === Statuschips ===
 let relayed = 0;
-$("btnQueue").onclick = () => {
-  const item = {
-    id: $("cShelter").value || "unknown",
-    people: $("cPeople").value || 0,
-    injured: $("cInjured").value || 0,
-    needs: ($("cNeeds").value || "")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean),
-    note: $("cNote").value,
-    status: $("cStatus").value,
-    ts: new Date().toISOString(),
-  };
-  const payload = JSON.stringify(item, null, 2);
-  $("relayBox").textContent = payload;
-  log("Queued new rescue packet for " + item.id);
-};
-
-// ==== QR generation ====
-$("btnQRRelay").onclick = async () => {
-  const payload = $("relayBox").textContent || '{"msg":"no queued data"}';
-  await makeQRCanvas(payload, "qrRoomBox");
-  $("qrRoomBox").hidden = false;
-  log("QR bundle displayed – ready to share.");
-};
-
-// ==== QR scan ====
-$("btnScanQR").onclick = () => {
-  log("Opening camera for QR scan...");
-  scanQRFromCamera((data) => {
-    try {
-      const parsed = JSON.parse(data);
-      log("Received bundle: " + JSON.stringify(parsed));
-    } catch {
-      log("Received plain text: " + data);
-    }
-  });
-};
-
-// ==== Transport placeholders ====
-$("btnAudio").onclick = () => {
-  log("Audio layer not yet active.");
-};
-$("btnBLE").onclick = () => {
-  log("Bluetooth layer not yet active.");
-};
-
-// ==== Diagnostics ====
 function updateChips() {
   $("chipNodes").textContent = "Nodes: " + Math.floor(Math.random() * 3);
   $("chipRelayed").textContent = "Relayed: " + relayed;
 }
 setInterval(updateChips, 5000);
+
+// === Start ===
+renderShelters();
+log("Rescue Mode ready.");
