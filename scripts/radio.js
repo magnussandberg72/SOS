@@ -125,6 +125,11 @@ function connect(channel, forceAlt=false){
   saveSettings(settings);
 }
 
+// Radio
+function saveRadioState(state){
+  try { localStorage.setItem("radio.state", JSON.stringify(state)); } catch {}
+}
+
 // Player events
 player.addEventListener("playing", ()=>{
   clearTimers();
