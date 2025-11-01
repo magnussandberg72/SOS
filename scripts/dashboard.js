@@ -19,9 +19,11 @@ function updateNet(){
   if(navigator.onLine){
     netChip.textContent = "Online";
     netChip.className = "chip online";
+    offlineBanner?.classList.add("hidden");
   }else{
     netChip.textContent = "Offline";
     netChip.className = "chip offline";
+    offlineBanner?.classList.remove("hidden");
   }
 }
 window.addEventListener("online",updateNet);
