@@ -4,6 +4,7 @@
 const $ = id => document.getElementById(id);
 
 /* ------------- Elements ------------- */
+const offlineBanner = $("offlineBanner");
 const netChip = $("netChip");
 const battLevel = $("battLevel");
 const battState = $("battState");
