@@ -3,7 +3,6 @@
   "short_name": "SOS",
   "description": "Offline-first crisis and shelter communication app built in Christ. Connect, pray and survive together.",
   "start_url": "index.html",
-  "start_url": "rescue.html",
   "display": "standalone",
   "background_color": "#0b1528",
   "theme_color": "#ffd85c",
