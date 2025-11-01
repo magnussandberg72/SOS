@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🛡️ SOS – Shelter Dashboard</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="icon" href="public/sos_favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="styles/dashboard.css"/>
+</head>
+<body>
+  <!-- Header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch("includes/header.html").then(r=>r.text()).then(h=>document.getElementById("header-placeholder").innerHTML=h);
+  </script>
+
+  <main class="wrap">
+    <header class="title">
+      <h1>🛡️ Shelter Dashboard</h1>
+      <p>Monitor your shelter status, radio, and messages — offline first.</p>
+      <div id="netChip" class="chip offline" aria-live="polite">Offline</div>
+      <div id="timeNow" class="muted">--:--</div>
+    </header>
+
+    <section class="grid">
+      <div class="card status">
+        <h2>📶 Network & Battery</h2>
+        <p id="battLevel">Battery: —</p>
+        <p id="battState">Charging: —</p>
+        <p id="lastSync">Last sync: —</p>
+      </div>
+
+      <div class="card radio">
+        <h2>📻 Radio</h2>
+        <p id="radioNow">Not playing.</p>
+        <button id="radioBtn" class="btn">Open Radio</button>
+      </div>
+
+      <div class="card messages">
+        <h2>💬 Last Messages</h2>
+        <div id="msgList" class="msgList"></div>
+        <button id="msgBtn" class="btn ghost">Open Message Center</button>
+      </div>
+
+      <div class="card shelter">
+        <h2>👥 Shelter Data</h2>
+        <label>People</label>
+        <input id="people" type="number" min="0" />
+        <label>Injured</label>
+        <input id="injured" type="number" min="0" />
+        <label>Water (L)</label>
+        <input id="water" type="number" min="0" />
+        <label>Food (days)</label>
+        <input id="food" type="number" min="0" />
+        <button id="saveShelter" class="btn">Update</button>
+      </div>
+
+      <div class="card hope">
+        <h2>✝️ Verse of Hope</h2>
+        <p id="verseText">Click below for a verse.</p>
+        <button id="verseBtn" class="btn">Get Verse</button>
+        <button id="readBtn" class="btn ghost small">🔊 Read Aloud</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch("includes/footer.html").then(r=>r.text()).then(f=>document.getElementById("footer-placeholder").innerHTML=f);
+  </script>
+
+  <script src="scripts/dashboard.js"></script>
+</body>
+</html>
