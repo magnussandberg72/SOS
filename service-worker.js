@@ -37,7 +37,12 @@ const FILES_TO_CACHE = [
 "scripts/dashboard.js",
   "health.html",
 "styles/health.css",
-"scripts/health.js"
+"scripts/health.js",
+  "map.html",
+"styles/map.css",
+"scripts/map.js",
+// om du hostar tiles lokalt:
+"public/tiles/"
 ];
 
 // Hjälpare: trim tile-cache efter gräns
