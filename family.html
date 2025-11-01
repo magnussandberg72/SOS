@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>❤️ SOS Family Section</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="public/sos_favicon.png" type="image/png" />
+  <link rel="stylesheet" href="styles/family.css" />
+</head>
+<body>
+  <!-- Global Header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch("includes/header.html")
+      .then(r=>r.text())
+      .then(h=>document.getElementById("header-placeholder").innerHTML=h);
+  </script>
+
+  <main class="wrap">
+    <header class="title">
+      <h1>❤️ Family Section</h1>
+      <p>Stay connected, calm, and faithful — even apart.</p>
+      <div id="offlineBanner" class="banner hidden" role="status">Offline mode – data stored locally</div>
+    </header>
+
+    <!-- Family Locator -->
+    <section class="members">
+      <h2>👨‍👩‍👧 Family Locator</h2>
+      <div id="membersList"></div>
+      <div class="input-row">
+        <input id="memberName" placeholder="Name" />
+        <input id="memberLocation" placeholder="Location" />
+        <button id="addMember" class="btn">Add Member</button>
+      </div>
+    </section>
+
+    <!-- Family Messages -->
+    <section class="messages">
+      <h2>💬 Family Messages</h2>
+      <div id="familyChat" class="chat-box"></div>
+      <div class="input-row">
+        <input id="msgInput" placeholder="Write message..." />
+        <button id="sendMsg" class="btn">Send</button>
+      </div>
+    </section>
+
+    <!-- Prayer Corner -->
+    <section class="prayers">
+      <h2>✝️ Prayer Corner</h2>
+      <ul id="prayerList"></ul>
+      <div class="input-row">
+        <input id="prayerInput" placeholder="Add prayer..." />
+        <button id="addPrayer" class="btn">Add Prayer</button>
+      </div>
+    </section>
+
+    <!-- Kids Section -->
+    <section class="kids">
+      <h2>🧒 For the Kids</h2>
+      <p>“Jesus loves me, this I know…”</p>
+
+      <div class="spotify-links">
+        <button id="playStory" class="btn">🎧 Play Comfort Story</button>
+
+        <a href="https://open.spotify.com/playlist/03aQr0Sg1K6OoAGjbXt7Oh?si=8VDHZrU6QT-mxIGOdjVs-Q&pi=h2E-I7puQiG77"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="btn ghost">
+           💛 Spotify – Children's Songs
+        </a>
+      </div>
+    </section>
+
+    <!-- Adults Section -->
+    <section class="adults">
+      <h2>🎵 For the Adults</h2>
+      <p>Music to stay calm and faithful — Bob Dylan classics and worship songs.</p>
+
+      <div class="spotify-links">
+        <a href="https://open.spotify.com/playlist/0baMVh3fCex6jom2ldKu7L?si=sdXNWkIzS_CN6Gjhva9Crg&pi=O7TLBEkcTx2Ya"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="btn ghost">
+           🎧 Bob Dylan – Faith & Freedom Playlist
+        </a>
+
+        <a href="https://open.spotify.com/playlist/37i9dQZF1DX7gIoKXt0gmx"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="btn ghost">
+           ✝️ Worship & Peace – Calm Worship Playlist
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Global Footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch("includes/footer.html")
+      .then(r=>r.text())
+      .then(f=>document.getElementById("footer-placeholder").innerHTML=f);
+  </script>
+
+  <script src="scripts/family.js"></script>
+</body>
+</html>
