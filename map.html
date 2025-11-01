@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🗺️ SOS – Shelter Map (Offline)</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="icon" href="public/sos_favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="styles/map.css"/>
+</head>
+<body>
+  <!-- Header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch("includes/header.html").then(r=>r.text()).then(h=>document.getElementById("header-placeholder").innerHTML=h);
+  </script>
+
+  <main class="wrap">
+    <header class="title">
+      <h1>🗺️ Shelter Map</h1>
+      <p>Offline-first map with local tiles, shelter markers and Health sync.</p>
+      <div class="row">
+        <div id="netChip" class="chip offline" aria-live="polite">Offline</div>
+        <div id="centerInfo" class="muted">—</div>
+      </div>
+      <div id="offlineBanner" class="banner hidden" role="status">OFFLINE MODE — tiles & markers from local storage</div>
+    </header>
+
+    <!-- Controls -->
+    <section class="card controls">
+      <div class="grid">
+        <div>
+          <label>Shelter ID</label>
+          <input id="shelterId" placeholder="e.g., Kalix-East-01"/>
+          <button id="saveShelterId" class="btn">Save ID</button>
+          <button id="markAsMine" class="btn ghost">Set marker as “My Shelter”</button>
+        </div>
+        <div>
+          <label>Lat / Lon</label>
+          <div class="pair">
+            <input id="latIn" placeholder="Lat"/>
+            <input id="lonIn" placeholder="Lon"/>
+          </div>
+          <div class="smallrow">
+            <button id="goTo" class="btn">Go to</button>
+            <button id="geo" class="btn ghost">Use GPS</button>
+          </div>
+        </div>
+        <div>
+          <label>Marker note</label>
+          <input id="noteIn" placeholder="e.g., Has generator / water"/>
+          <div class="smallrow">
+            <button id="addMarker" class="btn">Add Marker</button>
+            <button id="clearMarkers" class="btn ghost danger">Clear All</button>
+          </div>
+        </div>
+        <div>
+          <label>Data</label>
+          <div class="smallrow">
+            <button id="exportBtn" class="btn ghost">Export JSON</button>
+            <label class="filebtn">
+              Import JSON <input type="file" id="importFile" accept="application/json"/>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Map -->
+    <section class="card">
+      <div id="mapWrap">
+        <div id="map" tabindex="0" aria-label="Map. Drag to pan, wheel to zoom. Click to add marker."></div>
+        <div class="hud">
+          <button id="zoomIn" class="btn small">+</button>
+          <button id="zoomOut" class="btn small">−</button>
+          <div class="pad">
+            <button id="panUp">▲</button>
+            <div class="mid">
+              <button id="panLeft">◀</button>
+              <button id="panRight">▶</button>
+            </div>
+            <button id="panDown">▼</button>
+          </div>
+        </div>
+      </div>
+      <small class="muted">Tiles path (offline): <code>public/tiles/{z}/{x}/{y}.png</code></small>
+    </section>
+
+    <!-- Marker list -->
+    <section class="card">
+      <h2>📍 Markers</h2>
+      <div id="markerList" class="list"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch("includes/footer.html").then(r=>r.text()).then(f=>document.getElementById("footer-placeholder").innerHTML=f);
+  </script>
+
+  <script src="scripts/map.js"></script>
+</body>
+</html>
