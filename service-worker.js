@@ -34,7 +34,10 @@ const FILES_TO_CACHE = [
 "scripts/message.js",
   "dashboard.html",
 "styles/dashboard.css",
-"scripts/dashboard.js"
+"scripts/dashboard.js",
+  "health.html",
+"styles/health.css",
+"scripts/health.js"
 ];
 
 // Hjälpare: trim tile-cache efter gräns
