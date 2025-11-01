@@ -30,3 +30,37 @@ textarea{min-height:70px;resize:vertical}
 .relayBox{margin-top:10px;font-size:.9rem;color:#ddd}
 .console{grid-column:1/-1}
 .log{background:rgba(0,0,0,0.4);border-radius:10px;padding:10px;max-height:250px;overflow:auto;font-family:monospace;font-size:.9rem}
+/* Shelter list */
+.shelter-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+.shelter-item {
+  background: rgba(255,255,255,0.07);
+  padding: 10px 12px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+.shelter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+}
+.shelter-status {
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: .8rem;
+  color: #000;
+}
+.status-open {background:#6cff6c;}
+.status-full {background:#ffb84d;}
+.status-damaged {background:#ff6b6b;}
+.status-unknown {background:#999;}
+.shelter-body {
+  font-size: .9rem;
+  color:#dbe5ff;
+  margin-top:4px;
+}
+.shelter-body span{display:inline-block;margin-right:8px;}
