@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🚑 SOS – Rescue & Health Center</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="icon" href="public/sos_favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="styles/health.css"/>
+</head>
+<body>
+  <!-- Global Header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch("includes/header.html").then(r=>r.text()).then(h=>document.getElementById("header-placeholder").innerHTML=h);
+  </script>
+
+  <main class="wrap">
+    <header class="title">
+      <h1>🚑 Rescue & Health Center</h1>
+      <p>Track people, injuries, and supplies — offline first.</p>
+      <div class="headline">
+        <div id="netChip" class="chip offline" aria-live="polite">Offline</div>
+        <div id="lastUpdate" class="muted">Last update: —</div>
+      </div>
+
+      <div class="shelter-id">
+        <label for="shelterId">Shelter ID</label>
+        <input id="shelterId" placeholder="e.g., Kalix-East-01"/>
+      </div>
+
+      <div id="offlineBanner" class="banner hidden" role="status" aria-live="polite">
+        OFFLINE MODE — data stored locally
+      </div>
+    </header>
+
+    <!-- People & Injuries -->
+    <section class="card">
+      <h2>👤 People & Injuries</h2>
+
+      <div class="grid-two">
+        <div>
+          <label>Name</label>
+          <input id="pName" placeholder="Name"/>
+        </div>
+        <div>
+          <label>Status</label>
+          <select id="pStatus">
+            <option>Safe</option>
+            <option>Injured</option>
+            <option>Critical</option>
+            <option>Deceased</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-two">
+        <div>
+          <label>Injury / Symptom</label>
+          <input id="pInjury" placeholder="e.g., Burn, Fracture, Shock"/>
+        </div>
+        <div>
+          <label>Notes</label>
+          <input id="pNotes" placeholder="Short notes"/>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="addPerson" class="btn">Add Person</button>
+        <button id="clearPeople" class="btn ghost danger">Clear All People</button>
+      </div>
+
+      <div id="peopleList" class="table"></div>
+    </section>
+
+    <!-- Supplies & Needs -->
+    <section class="card">
+      <h2>📦 Supplies & Needs</h2>
+
+      <div class="grid-two">
+        <div>
+          <label>Item</label>
+          <input id="sItem" placeholder="e.g., Water, Painkillers, Bandages"/>
+        </div>
+        <div>
+          <label>Amount</label>
+          <input id="sAmount" placeholder="e.g., 20L, 5 tablets"/>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="addSupply" class="btn">Add Supply</button>
+        <button id="clearSupplies" class="btn ghost danger">Clear All Supplies</button>
+      </div>
+
+      <div id="suppliesList" class="table"></div>
+    </section>
+
+    <!-- First Aid (Offline text) -->
+    <section class="card">
+      <h2>🩹 First Aid – Quick Guide (offline)</h2>
+      <ul class="bullet">
+        <li><strong>Stop bleeding:</strong> Apply direct pressure. Elevate if possible.</li>
+        <li><strong>Treat shock:</strong> Keep person warm, lying down, feet raised. Calm voice.</li>
+        <li><strong>Burns:</strong> Cool with clean, cool water (not ice). Cover loosely.</li>
+        <li><strong>Breathing:</strong> Check airway, breathing, circulation. Recovery position if unconscious and breathing.</li>
+        <li><strong>Fractures:</strong> Immobilize. Do not move if spinal injury suspected.</li>
+      </ul>
+    </section>
+
+    <!-- Report -->
+    <section class="card">
+      <h2>📝 Generate SOS Health Report</h2>
+      <div class="actions">
+        <button id="genReport" class="btn">Generate Report</button>
+        <button id="copyReport" class="btn ghost">Copy</button>
+        <button id="clearAll" class="btn ghost danger">Reset All (People & Supplies)</button>
+      </div>
+      <textarea id="reportBox" class="report" placeholder="Report will appear here..." readonly></textarea>
+    </section>
+  </main>
+
+  <!-- Global Footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch("includes/footer.html").then(r=>r.text()).then(f=>document.getElementById("footer-placeholder").innerHTML=f);
+  </script>
+
+  <script src="scripts/health.js"></script>
+</body>
+</html>
