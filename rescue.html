@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🆘 SOS – Rescue Mode</title>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#220000"/>
+  <link rel="icon" href="public/sos_favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="styles/rescue.css"/>
+</head>
+<body>
+  <!-- Header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch("includes/header.html").then(r=>r.text()).then(h=>document.getElementById("header-placeholder").innerHTML=h);
+  </script>
+
+  <main class="wrap">
+    <section class="topbar">
+      <h1>🆘 Rescue Mode</h1>
+      <p class="muted">Offline coordination network – truth, love & protection.</p>
+      <div class="chips">
+        <span id="chipRoom" class="chip">Room: —</span>
+        <span id="chipNodes" class="chip">Nodes: 0</span>
+        <span id="chipRelayed" class="chip">Relayed: 0</span>
+        <span id="chipFaith" class="chip">✝️ Faith OFF</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>🏠 Room & Key</h2>
+        <p>Your local rescue room ID and shared key.</p>
+        <div class="row">
+          <input id="roomId" readonly/>
+          <button id="btnNewRoom" class="btn">🔄 New</button>
+        </div>
+        <textarea id="roomKey" readonly></textarea>
+        <div class="row">
+          <button id="btnShowQR" class="btn ghost">📱 Show QR</button>
+          <button id="btnCopyKey" class="btn">📋 Copy</button>
+        </div>
+        <div id="qrRoomBox" class="qrBox" hidden></div>
+      </div>
+
+      <div class="card">
+        <h2>🪶 Compose status</h2>
+        <div class="row"><input id="cShelter" placeholder="Shelter ID"/></div>
+        <div class="row">
+          <input id="cPeople" type="number" placeholder="People"/>
+          <input id="cInjured" type="number" placeholder="Injured"/>
+        </div>
+        <input id="cNeeds" placeholder="Needs (comma separated)"/>
+        <textarea id="cNote" placeholder="Short note..."></textarea>
+        <div class="row">
+          <select id="cStatus">
+            <option value="open">🟢 Open</option>
+            <option value="full">🟠 Full</option>
+            <option value="damaged">🔴 Damaged</option>
+            <option value="unknown">⚪ Unknown</option>
+          </select>
+          <button id="btnQueue" class="btn ok">💾 Queue</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📡 Transport</h2>
+        <div class="row">
+          <button id="btnQRRelay" class="btn">📤 QR Relay</button>
+          <button id="btnAudio" class="btn ghost">🔊 Audio</button>
+          <button id="btnBLE" class="btn ghost">🔵 Bluetooth</button>
+        </div>
+        <div id="relayBox" class="relayBox"></div>
+      </div>
+
+      <div class="card console">
+        <h2>🪵 Log console</h2>
+        <div id="log" class="log"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch("includes/footer.html").then(r=>r.text()).then(f=>document.getElementById("footer-placeholder").innerHTML=f);
+  </script>
+
+  <script src="scripts/rescue.js"></script>
+</body>
+            </html>
