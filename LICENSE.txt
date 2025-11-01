@@ -1,0 +1,63 @@
+───────────────────────────────────────────────
+VISION FRAMTID – HYBRID LICENSE v1.1
+───────────────────────────────────────────────
+Applies to: SOS App / Site (HTML, CSS, JS, design, concept)
+Author: Magnus T Gustav Sandberg (Kalix, Sweden)
+Date: November 2025
+───────────────────────────────────────────────
+
+🔹 SWEDISH VERSION
+Denna licens tillåter fritt icke-kommersiellt bruk av SOS-systemet 
+för humanitärt, kyrkligt, ideellt eller utbildningsmässigt syfte.
+
+All kod, design och struktur får kopieras, modifieras och delas 
+så länge:
+1. Vision Framtid och Magnus T. Gustav Sandberg nämns som källa.  
+2. Systemet används utan vinstsyfte.  
+3. Etiska och humanitära principer respekteras (kärlek, sanning, rättvisa).  
+4. Källfiler och denna licens bibehålls i alla kopior.  
+
+För **kommersiellt bruk**, statliga kontrakt eller teknisk integration
+med betalande plattformar krävs skriftligt licensavtal.
+
+Vid sådant bruk gäller följande:
+- Licensavgift eller **intäktsdelning** tillfaller upphovsmannen  
+  Magnus T. Gustav Sandberg enligt skriftligt avtal.  
+- Rekommenderad modell: **15–25 % royalty** på nettointäkter 
+  relaterade till systemets användning eller implementation.  
+- All form av kommersiell exploatering utan avtal utgör licensbrott.
+
+Missbruk, vinstdriven exploatering eller ändringar som förvanskar 
+systemets syfte (rädda liv, sprida ljus, tjäna det goda) är förbjudna.
+
+───────────────────────────────────────────────
+🔹 ENGLISH VERSION
+This license permits free **non-commercial use** of the SOS system
+for humanitarian, church, educational, or personal safety purposes.
+
+All source files, designs, and structures may be copied, modified,
+and shared under the following conditions:
+1. “Vision Framtid” and Magnus T. Gustav Sandberg must be credited.  
+2. No commercial or profit-driven use is allowed without agreement.  
+3. Ethical and humanitarian values must be upheld  
+   (love, truth, justice, and compassion).  
+4. This license file must remain attached to all copies or forks.
+
+For **commercial use**, government contracts, or integration
+with paid platforms, a written license agreement is required.
+
+In such cases:
+- The author **Magnus T. Gustav Sandberg** receives a license fee
+  or **revenue share** as stated in the agreement.  
+- Recommended model: **15–25 % royalty** of net revenue directly
+  related to the SOS system or its implementation.  
+- Any commercial exploitation without written consent
+  constitutes a violation of this license.
+
+Misuse, exploitation, or alteration of its core purpose
+—to save lives, bring peace, and serve good—is strictly forbidden.
+
+───────────────────────────────────────────────
+© 2025 Magnus T Gustav Sandberg / Vision Framtid  
+All rights reserved under Vision Framtid Hybrid License v1.1
+───────────────────────────────────────────────
