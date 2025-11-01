@@ -2,51 +2,118 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>📻 SOS Radio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📻 SOS Radio – Global Emergency Network</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="public/sos_favicon.png" type="image/png" />
   <link rel="stylesheet" href="styles/radio.css" />
 </head>
 <body>
+  <!-- Header -->
   <div id="header-placeholder"></div>
   <script>
-    fetch("includes/header.html")
-      .then(r => r.text())
-      .then(h => (document.getElementById("header-placeholder").innerHTML = h));
+    fetch("includes/header.html").then(r=>r.text()).then(h=>document.getElementById("header-placeholder").innerHTML=h);
   </script>
 
   <main class="wrap">
     <section class="top">
       <h1>📻 SOS Radio</h1>
-      <p>Emergency information and calm in the storm.</p>
-      <div id="status" class="status offline">Offline</div>
+      <p>Local and international emergency news — calm in the storm.</p>
+      <div id="status" class="status offline" aria-live="polite">Offline</div>
+      <div id="recon" class="recon hidden">Reconnecting in <span id="reconSec">5</span>s…</div>
     </section>
 
-    <section class="channels">
-      <button class="btn" data-src="https://sverigesradio.se/topsy/direkt/srapi/132.aac.m3u">P1 – Sveriges Radio</button>
-      <button class="btn" data-src="https://sverigesradio.se/topsy/direkt/srapi/163.aac.m3u">P4 Norrbotten</button>
-      <button class="btn" data-src="https://sverigesradio.se/topsy/direkt/srapi/212.aac.m3u">P4 Extra</button>
+    <!-- Tabs -->
+    <div class="tabs">
+      <button id="tabSweden" class="tab active" aria-controls="channelsSweden">🇸🇪 Sweden</button>
+      <button id="tabWorld" class="tab" aria-controls="channelsWorld">🌍 International</button>
+    </div>
+
+    <!-- Sweden -->
+    <section id="channelsSweden" class="channels visible">
+      <button class="btn"
+        data-id="sr_p1"
+        data-src="https://sverigesradio.se/topsy/direkt/srapi/132.aac.m3u"
+        data-alt="https://sverigesradio.se/topsy/direkt/132-hi.mp3">P1 – Sveriges Radio</button>
+
+      <button class="btn"
+        data-id="sr_p4_norrbotten"
+        data-src="https://sverigesradio.se/topsy/direkt/srapi/163.aac.m3u"
+        data-alt="https://sverigesradio.se/topsy/direkt/163-hi.mp3">P4 Norrbotten</button>
+
+      <button class="btn"
+        data-id="sr_p4_extra"
+        data-src="https://sverigesradio.se/topsy/direkt/srapi/212.aac.m3u"
+        data-alt="https://sverigesradio.se/topsy/direkt/212-hi.mp3">P4 Extra</button>
     </section>
 
+    <!-- International -->
+    <section id="channelsWorld" class="channels">
+      <button class="btn"
+        data-id="bbc_ws"
+        data-src="https://stream.live.vc.bbcmedia.co.uk/bbc_world_service"
+        data-alt="">BBC World Service (UK)</button>
+
+      <button class="btn"
+        data-id="voa_en"
+        data-src="https://voa-20.akacast.akamaistream.net/7/998/437217/v1/ibb.akacast.akamaistream.net/voa-20"
+        data-alt="">Voice of America (USA)</button>
+
+      <button class="btn"
+        data-id="dw_en"
+        data-src="https://dwedge05-lh.akamaihd.net/i/dwstream_en@124646/master.m3u8"
+        data-alt="">Deutsche Welle (DE)</button>
+
+      <button class="btn"
+        data-id="kan_bet"
+        data-src="https://kanliveicy.media.kan.org.il/icy/kanbet_mp3"
+        data-alt="">KAN Bet – Israel News</button>
+
+      <button class="btn"
+        data-id="vatican_en"
+        data-src="https://radio.vaticannews.va/live-audio-channel-en"
+        data-alt="">Vatican Radio (EN)</button>
+    </section>
+
+    <!-- Player -->
     <section class="player">
-      <audio id="radioPlayer" controls preload="none"></audio>
-      <p id="nowPlaying">No stream selected.</p>
+      <div class="controls">
+        <audio id="radioPlayer" controls preload="none"></audio>
+        <div class="volume">
+          <label for="vol">🔊</label>
+          <input id="vol" type="range" min="0" max="1" step="0.01" />
+          <button id="muteBtn" class="btn ghost small">Mute</button>
+        </div>
+      </div>
+      <p id="nowPlaying" class="np">No stream selected.</p>
+      <button id="retryBtn" class="btn ghost small">Retry</button>
     </section>
 
+    <!-- Calm Loop (offline fallback audio) -->
+    <section class="calm">
+      <h2>🕊️ Calm Loop (offline)</h2>
+      <p>If there is no connection, you can play a short calming loop locally.</p>
+      <div class="row">
+        <button id="calmTone" class="btn">Play Calm Tone</button>
+        <button id="calmMsg" class="btn">Play Calm Message</button>
+        <button id="calmStop" class="btn ghost">Stop Loop</button>
+      </div>
+      <small>Files: <code>public/fallback_tone.mp3</code>, <code>public/fallback_message_en.mp3</code></small>
+    </section>
+
+    <!-- Alerts -->
     <section class="alerts">
       <h2>⚠️ Emergency Updates</h2>
-      <div id="alertsBox" class="alerts-box">
+      <div id="alertsBox" class="alerts-box" aria-live="polite">
         <p>No alerts available (offline).</p>
       </div>
     </section>
   </main>
 
+  <!-- Footer -->
   <div id="footer-placeholder"></div>
   <script>
-    fetch("includes/footer.html")
-      .then(r => r.text())
-      .then(f => (document.getElementById("footer-placeholder").innerHTML = f));
+    fetch("includes/footer.html").then(r=>r.text()).then(f=>document.getElementById("footer-placeholder").innerHTML=f);
   </script>
 
   <script src="scripts/radio.js"></script>
