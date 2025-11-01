@@ -14,6 +14,42 @@ const radioNow = $("radioNow");
 const msgList = $("msgList");
 const verseText = $("verseText");
 
+/* ------------- Radio ---------------- */
+
+function readRadioState(){
+  try { return JSON.parse(localStorage.getItem("radio.state") || "null"); }
+  catch { return null; }
+}
+
+function renderRadioState(){
+  const st = readRadioState();
+  if(!st){
+    radioNow.textContent = "Not playing.";
+    return;
+  }
+  if(st.mode === "calm"){
+    radioNow.textContent = `🕊️ Calm Loop: ${st.label || "Local audio"}`;
+    return;
+  }
+  if(st.connecting){
+    radioNow.textContent = `⏳ Connecting: ${st.label || st.id || "—"}`;
+    return;
+  }
+  if(st.playing){
+    radioNow.textContent = `🎶 Playing: ${st.label || st.id || "—"}`;
+    return;
+  }
+  if(st.error){
+    radioNow.textContent = `⚠️ Radio error — ${st.reason || "check connection"}`;
+    return;
+  }
+  radioNow.textContent = st.label ? `Last channel: ${st.label}` : "Not playing.";
+}
+
+// uppdatera var 2s så dashboard följer radion
+renderRadioState();
+setInterval(renderRadioState, 2000);
+
 /* ------------- Network -------------- */
 function updateNet(){
   if(navigator.onLine){
