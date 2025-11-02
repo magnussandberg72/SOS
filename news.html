@@ -82,7 +82,28 @@
     <p class="subtitle">Verified alerts & reports during crises
       <span class="en">Verifierade varningar & rapporter under kriser</span>
     </p>
+<div style="margin-top:20px;">
+  <button id="refreshBtn" class="btn">🔁 Refresh / Uppdatera</button>
+  <button id="toggleFeed" class="btn ghost" style="margin-left:10px;">
+    Switch to P4 Norrbotten
+  </button>
+</div>
 
+<!-- Nyhetssektion -->
+<section class="news-section" style="margin-top:30px; text-align:center;">
+  <div id="offlineMsg"
+       style="display:none; background:rgba(255,255,255,0.1); color:#ffd85c; padding:10px;
+              border-radius:10px; max-width:500px; margin:0 auto 15px;">
+    ⚠️ Offline mode – showing last saved news
+  </div>
+
+  <div id="newsList"
+       style="max-width:600px; margin:0 auto; padding:10px 15px; text-align:left; color:#fff; font-size:0.95rem;">
+    <p>⏳ Loading latest verified reports from Sveriges Radio P1...</p>
+  </div>
+</section>
+
+<script src="scripts/news.js"></script>
     <section id="newsList">
       <div class="news-container">
         <h3>🚨 Example Alert / Exempelvarning</h3>
