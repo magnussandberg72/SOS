@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>⚠️ Emergency News / Nödlägesnyheter – SOS</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="public/sos_favicon.png" type="image/png" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/header.css" />
+  <link rel="stylesheet" href="styles/footer.css" />
+  <style>
+    body {
+      margin:0;
+      font-family: system-ui, sans-serif;
+      background: linear-gradient(to bottom, #12223f, #020915);
+      color:#fff;
+      text-align:center;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    main { padding:40px 20px; max-width:900px; margin:auto; }
+    h1 { font-size:36px; color:#ffd85c; margin-bottom:6px; }
+    .subtitle { font-size:18px; color:#dfe7ff; margin-bottom:30px; font-style:italic; }
+    .en { display:block; opacity:0.9; margin-top:4px; font-size:0.9em; }
+
+    .news-container {
+      background:rgba(255,255,255,0.06);
+      border-radius:14px;
+      padding:20px;
+      margin-bottom:25px;
+      box-shadow:0 0 10px rgba(255,255,255,0.1);
+      text-align:left;
+    }
+
+    .news-container h3 {
+      margin-top:0;
+      color:#ffd85c;
+      font-size:20px;
+    }
+
+    .time {
+      font-size:0.85rem;
+      color:#bcd3ff;
+      margin-bottom:8px;
+    }
+
+    .offline {
+      background:rgba(255,255,255,0.05);
+      border-radius:10px;
+      padding:12px;
+      color:#ccc;
+      margin-top:20px;
+    }
+
+    .refresh-btn {
+      background:linear-gradient(90deg,#ffd85c,#ffb347);
+      color:#00214d;
+      border:none;
+      border-radius:20px;
+      font-weight:700;
+      padding:10px 20px;
+      cursor:pointer;
+      margin-top:20px;
+      transition:all .25s ease;
+    }
+    .refresh-btn:hover { transform:scale(1.05); box-shadow:0 0 15px rgba(255,255,255,0.5); }
+  </style>
+</head>
+
+<body>
+  <!-- Global header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch("includes/header.html")
+      .then(r=>r.text())
+      .then(h=>document.getElementById("header-placeholder").innerHTML=h);
+  </script>
+
+  <main>
+    <h1>⚠️ Emergency News</h1>
+    <p class="subtitle">Verified alerts & reports during crises
+      <span class="en">Verifierade varningar & rapporter under kriser</span>
+    </p>
+
+    <section id="newsList">
+      <div class="news-container">
+        <h3>🚨 Example Alert / Exempelvarning</h3>
+        <p class="time">Updated: Nov 2, 2025 – 12:00 UTC</p>
+        <p>
+          Stay in shelters until the all-clear signal. Local radio and SOS app
+          will issue updates hourly.
+          <span class="en">Stanna i skyddsrummen tills klarsignal ges. Lokalradio och SOS-appen uppdaterar varje timme.</span>
+        </p>
+      </div>
+
+      <div class="news-container">
+        <h3>🌧️ Power Restoration Ongoing / Ström återställs</h3>
+        <p class="time">Updated: Nov 2, 2025 – 10:30 UTC</p>
+        <p>
+          Engineers are restoring power in affected regions. 
+          Water supply remains stable. 
+          <span class="en">Tekniker återställer ström i drabbade områden. Vattentillförseln är stabil.</span>
+        </p>
+      </div>
+    </section>
+
+    <div class="offline" id="offlineMsg" style="display:none;">
+      📡 Offline mode – cached news visible only.  
+      <span class="en">Offline-läge – endast sparade nyheter visas.</span>
+    </div>
+
+    <button class="refresh-btn" onclick="refreshNews()">🔄 Refresh / Uppdatera</button>
+  </main>
+
+  <!-- Global footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch("includes/footer.html")
+      .then(r=>r.text())
+      .then(f=>document.getElementById("footer-placeholder").innerHTML=f);
+  </script>
+
+  <script>
+    // Offline detector
+    function updateOnlineStatus(){
+      document.getElementById("offlineMsg").style.display = navigator.onLine ? "none":"block";
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    // Refresh placeholder
+    function refreshNews(){
+      location.reload(true);
+    }
+  </script>
+</body>
+</html>
