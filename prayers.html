@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bön 🙏🏼 – Kyrkan</title>
+  <link rel="icon" type="image/png" href="../public/M-M-logo.png" />
+  <link rel="stylesheet" href="../styles/main.css" />
+  <link rel="stylesheet" href="../styles/header.css" />
+  <link rel="stylesheet" href="../styles/footer.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: linear-gradient(to bottom, #b5d9ff, #00214d);
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      animation: fadeInBody 1.5s ease-in;
+    }
+
+    @keyframes fadeInBody {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    main {
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 42px;
+      margin-top: 30px;
+      text-shadow: 0 0 10px rgba(255,255,255,0.7);
+    }
+
+    p.subtitle {
+      font-style: italic;
+      color: #eaf4ff;
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+
+    .prayer-box {
+      background: rgba(255,255,255,0.08);
+      border-radius: 14px;
+      width: 90%;
+      max-width: 480px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      resize: none;
+      font-family: system-ui, sans-serif;
+      font-size: 1rem;
+      background-color: #fff;
+      color: #000;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    button {
+      margin-top: 15px;
+      background-color: #222;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.25s;
+    }
+
+    button:hover {
+      background-color: #333;
+    }
+
+    .prayer-list {
+      margin-top: 40px;
+      width: 90%;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .prayer-item {
+      background: rgba(255,255,255,0.08);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+      white-space: pre-wrap;
+      line-height: 1.5;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeInPrayer 0.6s forwards;
+    }
+
+    @keyframes fadeInPrayer {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .prayer-item strong {
+      color: #ffd85c;
+    }
+
+    footer {
+      margin-top: 60px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 🌍 Global header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch("../includes/header.html")
+      .then(r => r.text())
+      .then(h => (document.getElementById("header-placeholder").innerHTML = h))
+      .catch(() => console.warn("❌ Header kunde inte laddas."));
+  </script>
+
+  <main>
+    <h1>Bön 🙏🏼</h1>
+    <p class="subtitle">Dela din bön – Herren hör alla som ber i tro.</p>
+
+    <div class="prayer-box">
+      <textarea id="prayerText" placeholder="Skriv din bön här..."></textarea>
+      <button onclick="addPrayer()">Skicka bön ✝️</button>
+    </div>
+
+    <div class="prayer-list" id="prayerList"></div>
+  </main>
+
+  <!-- 🌍 Global footer-sub -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch("../includes/footer-sub.html")
+      .then(r => r.text())
+      .then(f => (document.getElementById("footer-placeholder").innerHTML = f))
+      .catch(() => console.warn("❌ Footer kunde inte laddas från ../includes/footer-sub.html"));
+  </script>
+
+  <script>
+    function addPrayer() {
+      const text = document.getElementById("prayerText").value.trim();
+      if (!text) return alert("Skriv en bön först 🙏🏼");
+
+      const list = document.getElementById("prayerList");
+      const div = document.createElement("div");
+      div.className = "prayer-item";
+
+      const now = new Date().toLocaleString("sv-SE", {
+        dateStyle: "short",
+        timeStyle: "short"
+      });
+
+      div.innerHTML = `<strong>🕊️ Bön (${now}):</strong><br>${text}`;
+      list.prepend(div);
+      document.getElementById("prayerText").value = "";
+
+      // Spara i sessionStorage
+      const saved = JSON.parse(sessionStorage.getItem("prayers") || "[]");
+      saved.unshift({ text, time: now });
+      sessionStorage.setItem("prayers", JSON.stringify(saved));
+
+      // Triggera fade-in animation
+      requestAnimationFrame(() => {
+        div.style.opacity = "1";
+        div.style.transform = "translateY(0)";
+      });
+    }
+
+    // Visa sparade böner vid laddning
+    window.addEventListener("DOMContentLoaded", () => {
+      const list = document.getElementById("prayerList");
+      const saved = JSON.parse(sessionStorage.getItem("prayers") || "[]");
+      saved.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "prayer-item";
+        div.innerHTML = `<strong>🕊️ Bön (${p.time}):</strong><br>${p.text}`;
+        list.append(div);
+      });
+    });
+  </script>
+</body>
+</html>
